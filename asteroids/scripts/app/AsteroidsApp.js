@@ -8,10 +8,13 @@ AsteroidsApp = function(veroldApp,ui) {
 
   this.asteroid_template;
 
-  var width = $(window).width(), height = $(window).height();
-  this.orthTop = 14;
-  this.orthBottom = this.orthTop;
   this.ui = ui;
+
+  this.conversionScale = 3.55;
+
+  this.resizeView();
+
+  $(window).resize($.proxy(this.resizeView,this));
   
 }
 
@@ -52,14 +55,8 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
       that.ship = models[ _.keys( models )[0] ];
       var model = that.ship.threeData;
 
-      console.info(that.ship);
-
       //Create the camera
-      var width = $(window).width();
-      var height = $(window).height();
-      var topAndBottom = 14;
-      var leftAndRight = topAndBottom * (width/height);
-      that.camera = new THREE.OrthographicCamera(-leftAndRight,leftAndRight,topAndBottom,-topAndBottom, 0.1, 10000 );
+      that.camera = new THREE.OrthographicCamera(that.orthLeft,that.orthRight,that.orthTop,that.orthBottom, 0.1, 10000 );
       that.camera.up.set( 0, 1, 0 );
       that.camera.position.set( 0, 0, 20);
 
@@ -167,4 +164,35 @@ AsteroidsApp.prototype.onKeyPress = function( event ) {
   
   }
     
+}
+
+/* additional functions */
+AsteroidsApp.prototype.resizeView = function() {
+  var width = $(window).width(), height = $(window).height();
+  this.orthTop = 14;
+  this.orthBottom = -this.orthTop;
+  this.orthRight = this.orthTop * (width/height);
+  this.orthLeft = -this.orthRight;
+
+  if(!!this.camera) {
+    this.camera.top = this.orthTop;
+    this.camera.right = this.orthRight;
+    this.camera.bottom = this.orthBottom;
+    this.camera.left = this.orthLeft;
+
+    this.camera.updateProjectionMatrix();
+  }
+}
+
+AsteroidsApp.prototype.getOrthBounds = function() {
+  return {
+    top: this.orthTop,
+    left: this.orthLeft,
+    bottom: this.orthBottom,
+    right: this.orthRight
+  }
+}
+
+AsteroidsApp.prototype.getPhysicsTo3DSpaceConverson = function() {
+  return this.conversionScale;
 }

@@ -88,6 +88,8 @@ define([
 
       Ship.Super.prototype.update.call(this);
 
+      // console.info(this.attributes.modelPosition);
+
     },
 
     adjustDirection : function(angle,step) {

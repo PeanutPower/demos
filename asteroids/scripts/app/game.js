@@ -5,7 +5,8 @@ define([
   'app/actorfactory',
   'app/util',
   'app/customevents',
-  'app/userinterface'
+  'app/userinterface',
+  'Box2D'
 ] , function(
   Stage,
   ActorFactory,
@@ -18,7 +19,9 @@ define([
   var stage = new Stage(),
       gameActions,
       veroldApps,
-      ui = new UserInterface();
+      ui = new UserInterface(),
+      scale = stage.getScale(),
+      coordsConversion;
 
   // ui = new UserInterface(new CanvasWrapper($('<canvas id="ui">').appendTo('body')));
 
@@ -47,6 +50,7 @@ define([
 
   gameActions = {
     start : function(){
+      coordsConversion = veroldApps.asteroids.getPhysicsTo3DSpaceConverson();
 
       stage.setVeroldApps(veroldApps);
 
@@ -93,10 +97,10 @@ define([
     },
 
     addAsteroid : function() {
-      var bnds = stage.getBounds(),
+      var orthBnds = veroldApps.asteroids.getOrthBounds(),
           position = {
-            x: util.randRange(bnds.x1,bnds.x2),
-            y: util.randRange(bnds.y1,bnds.y2)
+            x: util.randRange(orthBnds.left,orthBnds.right)*scale*coordsConversion,
+            y: util.randRange(orthBnds.top,orthBnds.bottom)*scale*coordsConversion
           },
           angularVelocity = 15,
           asteroid;
@@ -118,7 +122,7 @@ define([
     addShip : function() {
       stage.createActor({
         actorType: 'ship',
-        position: stage.getCenterPoint(),
+        position: new Box2D.Common.Math.b2Vec2(0,0),
         angle: 0,
         radius: 5,
         model: veroldApps.asteroids.getShipModel()

@@ -38,7 +38,6 @@ requirejs.config({
 // load all dependencies here
 requirejs([
   'app/game',
-  'Box2D',
   'jquery',
   'underscore',
   'handlebars',

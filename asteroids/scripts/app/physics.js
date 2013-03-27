@@ -170,6 +170,12 @@ function(my,util) {
       }
 
       this.world.SetContactListener(listener);
+    },
+
+    multiply : function(vector,scalar) {
+      var tempVec = this.b2Vec2(vector.x,vector.y);
+      tempVec.Multiply(scalar);
+      return tempVec;
     }
 
   });

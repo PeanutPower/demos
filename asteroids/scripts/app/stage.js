@@ -179,18 +179,39 @@ define([
       },
 
       correctPosition : function(actor) { // getionElement as arg
-        var bounds = this.getBounds();
+        var bounds = veroldApps.asteroids.getOrthBounds(),
+            coordsConversion = veroldApps.asteroids.getPhysicsTo3DSpaceConverson();
         if(actor) {
           var body = actor.body,
-              op = body.GetPosition(),
+              op = actor.attributes.modelPosition,
               scale = physics.getScale(),
-              x = op.x * scale,
-              y = op.y * scale;
+              nx,
+              ny;
           
-          if(x > bounds.x2) { body.SetPosition(physics.b2Vec2(bounds.x1/scale,op.y)); }
-          if(y > bounds.y2) { body.SetPosition(physics.b2Vec2(op.x,bounds.y1/scale)); }
-          if(x < bounds.x1) { body.SetPosition(physics.b2Vec2(bounds.x2/scale,op.y)); }
-          if(y < bounds.y1) { body.SetPosition(physics.b2Vec2(op.x,bounds.y2/scale)); }
+          if(op.x > bounds.right) { 
+            nx = (bounds.left)*coordsConversion;
+            ny = (op.y)*coordsConversion;
+            body.SetPosition(physics.b2Vec2(nx,-ny));
+            return;
+          }
+          if(op.y > bounds.top) {
+            nx = (op.x)*coordsConversion;
+            ny = (bounds.bottom)*coordsConversion;
+            body.SetPosition(physics.b2Vec2(nx,-ny));
+            return;
+          }
+          if(op.x < bounds.left) {
+            nx = (bounds.right)*coordsConversion;
+            ny = (op.y)*coordsConversion;
+            body.SetPosition(physics.b2Vec2(nx,-ny));
+            return;
+          }
+          if(op.y < bounds.bottom) {
+            nx = (op.x)*coordsConversion;
+            ny = (bounds.top)*coordsConversion;
+            body.SetPosition(physics.b2Vec2(nx,-ny));
+            return;
+          }
         }
       },
 
@@ -260,6 +281,14 @@ define([
 
       setVeroldApps : function(apps) {
         veroldApps = apps;
+      },
+
+      getVeroldApps : function() {
+        return veroldApps;
+      },
+
+      getScale : function() {
+        return physics.getScale();
       }
     };
 

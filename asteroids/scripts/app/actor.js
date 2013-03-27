@@ -23,6 +23,8 @@ define([
     initialize : function() {
 
       this.scale = this.attributes.physics.getScale();
+      this.stage = this.attributes.stage;
+      this.coordinatesConversion = this.stage.getVeroldApps().asteroids.getPhysicsTo3DSpaceConverson();
 
       this.attributes.state = 'default';
 
@@ -58,6 +60,7 @@ define([
         this.setModel(this.attributes.model);
       }
 
+
       // create vector graphic
       // if(!this.attributes.states) {
       //   this.attributes.states = {
@@ -80,25 +83,19 @@ define([
     },
 
     update : function() {
-      var bpos = this.body.GetPosition(),
-          apos = this.attributes.position,
-          scaleConversion = 35.5,
-          bounds = this.attributes.stage.getBounds(),
-          mpos;
 
       // position based on b2 body
-      apos.x = bpos.x * this.scale;
-      apos.y = bpos.y * this.scale;
+      this.attributes.position = this.body.GetPosition();
       this.attributes.angle = this.body.GetAngle();
 
       if(!!this.attributes.model) {
-        model = this.attributes.model;
-        model.threeData.position.x = (apos.x - (bounds.x2/2)) / scaleConversion;
-        model.threeData.position.y = (-(apos.y - (bounds.y2/2))) / scaleConversion;
+        var model = this.attributes.model.threeData;
+        model.position.x = this.attributes.position.x / this.coordinatesConversion;
+        model.position.y = -this.attributes.position.y / this.coordinatesConversion;
 
-        model.threeData.quaternion.setFromAxisAngle(this.rotationVector,-this.attributes.angle);
+        model.quaternion.setFromAxisAngle(this.rotationVector,-this.attributes.angle);
 
-        this.attributes.modelPosition = model.threeData.position;        
+        this.attributes.modelPosition = model.position;        
       }
     },
 

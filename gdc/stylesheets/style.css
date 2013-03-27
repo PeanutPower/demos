@@ -1,4 +1,5 @@
 /* ico moon styles */
+/* refer to icomoon.io for more information on how to manage an icomoon icon font */
 
 @font-face {
   font-family: 'icomoon';
@@ -12,7 +13,7 @@
 }
 
 /* any new icon classes must be added to this list */
-.icon-help, .icon-info, .icon-close, .icon-settings {
+.icon-help, .icon-info, .icon-close, .icon-settings, .icon-orbit {
   font-family: 'icomoon';
   speak: none;
   font-style: normal;
@@ -35,12 +36,28 @@
 .icon-settings:before {
   content: "\24";
 }
+.icon-orbit:before {
+  content: "\25";
+}
+
+.icon-orbit{
+	font-size:2em !important;
+}
 
 /* GENERAL */
 
 body {
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background: #000;
+  font: 100% 'Open Sans', Helvetica, Arial, sans-serif;
+	background: rgb(34,34,34); /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPHJhZGlhbEdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNzUlIj4KICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMyMjIyMjIiIHN0b3Atb3BhY2l0eT0iMSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMTExMTExIiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L3JhZGlhbEdyYWRpZW50PgogIDxyZWN0IHg9Ii01MCIgeT0iLTUwIiB3aWR0aD0iMTAxIiBoZWlnaHQ9IjEwMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-radial-gradient(center, ellipse cover,  rgba(34,34,34,1) 0%, rgba(17,17,17,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(34,34,34,1)), color-stop(100%,rgba(17,17,17,1))); /* Chrome,Safari4+ */
+	background: -webkit-radial-gradient(center, ellipse cover,  rgba(34,34,34,1) 0%,rgba(17,17,17,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-radial-gradient(center, ellipse cover,  rgba(34,34,34,1) 0%,rgba(17,17,17,1) 100%); /* Opera 12+ */
+	background: -ms-radial-gradient(center, ellipse cover,  rgba(34,34,34,1) 0%,rgba(17,17,17,1) 100%); /* IE10+ */
+	background: radial-gradient(ellipse at center,  rgba(34,34,34,1) 0%,rgba(17,17,17,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222222', endColorstr='#111111',GradientType=1 ); /* IE6-8 fallback on horizontal gradient */
 }
 
 body, html {
@@ -53,24 +70,26 @@ a {
   color: #00B7FF;
 }
 
-h1 {
-  font-family: sans-serif;
-  font-weight:200;
-  padding: 15% 20px 20px;
-  color: rgba(255,255,255,0.8);
-  text-shadow: 0 0 10px #5cd6f9;
-  text-align:center;
-  font-size:4em;
+p{
+	font-size:0.85em;
 }
 
-h2 {
-  font-family: sans-serif;
-  font-weight:200;
-  padding: 10px 20px;
-  color: rgba(255,255,255,0.8);
+h1 {
+  font:4.5em 'Lato', sans-serif;
+  font-weight:300;
+  margin: 12% 20px 0.2em;
+  color: #199CDC;
   text-align:center;
-  font-size:2em;
-  text-shadow: 0 0 2px rgba(0,0,0,0.7);
+}
+
+#headers h2 {
+  font-size: 1.3em;
+  font-weight:300;
+  letter-spacing:0.3em;
+  padding: 0 20px 2em;
+  color: #fff;
+  text-align:center;
+  text-transform:uppercase;
 }
 
 #menu {
@@ -109,7 +128,6 @@ h2 {
   top: 70px;
   clear: both;
   z-index: 100;
-  font-size: 1.2em;
 }
 
 .panel .icon-moon:before {
@@ -124,17 +142,15 @@ h2 {
 }
 
 .panel p {
-	font-family: 'Open Sans', Helvetica, sans-serif;
-	font-size:0.85em;
-	font-weight:300;
 	line-height:1.4em;
+  color:#eee;
+  margin: 20px 0;
+  font-size: 0.8em;
 }
 
 .panel h2 {
-  font-weight:400;
-  font-size: 1.2em;
-  text-align: center;
-  margin: 0 20px 20px;
+  font-size: 1.3em;
+  margin-bottom:0.6em;
 }
 
 .panel h3 {
@@ -147,12 +163,14 @@ h2 {
 }
 
 .panel a.close {
-  float: right;
+  position:absolute;
+  right:20px;
+  top:33px;
   display: block;
-  font-weight: bold;
   text-decoration: none;
   color: #999;
-  font-size: 24px;
+  font-size: 2em;
+  font-weight:300;
   line-height: 0;
 }
 
@@ -188,69 +206,57 @@ h2 {
   -webkit-border-top-right-radius: 0;
 }
 
-#share-tools {
-  display: none;
-  position: absolute;
-  z-index: 10;
-  bottom: 15px;
-  right: -10px;
-  overflow: hidden;
-  height: 22px;
-}
-
-#share-tools .fb-like {
-  margin-right: 2px;
-}
-
-#share-tools .fb-like span {
-  top: -3px !important;
+#settings-panel .icon-moon {
+  font-size: 44px;
+  vertical-align: middle;
+  margin-right: 10px;
 }
 
 #poweredby {
-  font-family: 'Open Sans', sans-serif;
-  font-weight:300;
   position:absolute;
   bottom: 30px;
   left: 20px;
   color:#fff;
   z-index: 2;
-  font-size: 12px;
+  font-weight:300;
 }
 
 #poweredby img {
   position:relative;
-  top:16px;
-  margin:0 10px;
+  margin:0 5px;
+}
+
+#poweredby .verold-logo {
+  height: 35px;
+  top:10px;
 }
 
 #poweredby .threejs-logo {
-  height: 30px;
+  height: 22px;
+  top:10px;
+  
 }
 
 #loading-progress-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
   width: 300px;
   height: 56px;
-  margin: -28px 0 0 -150px;
+  margin:0 auto;
 }
 
 #loading-progress-container p {
-  color: #999;
+  color: #ccc;
   text-align: center;
-  font-weight: bold;
-  font-size: 16px;
+  margin-bottom:0.5em;
 }
 
 #loading-progress-container .loading-progress {
-  border: 1px solid #999;
-  height: 30px;
+  border: 1px solid #333;
+  height: 3px;
 }
 
 #loading-progress-container .loading-progress div {
   width: 1px;
-  background: #999;
+  background: #199CDC;
   height: 100%;
 }
 
@@ -264,6 +270,7 @@ h2 {
   color: #999;
   text-align: center;
   display:none;
+  z-index: 3;
 }
 
 #render-target-container {
@@ -280,6 +287,11 @@ h2 {
 @media screen and (max-width: 720px) {
   h1 {
     font-size: 2.8em;
+    margin-top: 80px;
+  }
+  
+  #headers h2{
+  	font-size: 1em;
   }
   
   #loading-progress-container,
@@ -321,24 +333,27 @@ h2 {
   }
 
   #poweredby {
-    position: static;
-    height: 40px;
-    padding-left: 10px;
+    position: absolute;
+    top:-3px;
+    left:10px;
   }
+  
+  #poweredby img{
+  	margin:0 3px;
+  }
+  
+  
+	#poweredby .verold-logo {
+	  height: 28px;
+	  top:9px;
+	}
 
-  #poweredby img {
-    top:7px;
-    margin:0 7px;
-  }
+	#poweredby .threejs-logo {
+	  height: 17px;
+	  top:8px;
+  
+	}
 
-  #poweredby .verold-logo {
-    width: 60px;
-  }
-
-  #poweredby .threejs-logo {
-    width: 45px;
-    height: auto;
-  }
 }
 
 @media all and (max-width: 720px) and (orientation:landscape) {

@@ -7,10 +7,12 @@
   <link rel="stylesheet" href="stylesheets/reset.css">
   <link rel="stylesheet" href="stylesheets/style.css">
   <script type="text/javascript" src="http://assets.verold.com/verold_api/verold_api_v1.js"></script>
-  <script type="text/javascript" src="javascripts/underscore.js"></script>
-  <script type="text/javascript" src="javascripts/VeroldApp.js"></script>
+  <script type="text/javascript" src="javascripts/vendor/underscore.js"></script>
+  <script type="text/javascript" src="javascripts/vendor/VeroldApp.js"></script>
   <script type="text/javascript" src="javascripts/MyApp.js"></script>
   <script type="text/javascript" src="javascripts/AppUI.js"></script>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
 </head>
 <body>
 
@@ -32,21 +34,15 @@
     <div id="settings-panel" class="panel">
       <a href="javascript:void(0);" class="close">&times;</a>
       <h2>Settings</h2>
+      <p><i class="icon-moon icon-orbit"></i> <strong>Orbit</strong> camera with left click and drag</p>
       <p>Here you can place any UI elements that allow users to adjust settings that influence the opporation of your project. Dat.GUI is a popular choice for quickly creating GUI elements.</p>
-    </div>
-
-    <div id="share-tools">
-      <div class="g-plus" data-action="share" data-annotation="bubble"></div>
-      <div class="fb-like" data-send="false" data-layout="button_count" data-width="75" data-show-faces="false" data-colorscheme="light"></div>
-      <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
-      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
     </div>
 
   </div>
 
   <div id="headers">
     <h1>Verold Boiler Plate</h1>
-    <h2>Replace These Headers</h2>
+    <h2><!-- Replace These Headers --></h2>
   </div>
 
   <div id="loading-progress-container">
@@ -60,7 +56,6 @@
     <a id="info" class="icon-moon icon-info" href="javascript:void(0);"></a>
     <a id="settings" class="icon-moon icon-settings" href="javascript:void(0);"></a>
   </div>
-
 
   <div id="render-errors"></div>
 

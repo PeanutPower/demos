@@ -61,7 +61,7 @@ define([
         infoPanelTemplate = Handlebars.compile(util.cleanTemplate('#info-panel-template')),
         
         // DOM node for information output
-        infoPanel = $('#infoPanel'),
+        infoPanel = $('#info-panel'),
 
         renderInterval = null,
 

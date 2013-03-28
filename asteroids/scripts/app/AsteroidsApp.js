@@ -1,4 +1,4 @@
-AsteroidsApp = function(veroldApp,ui) {
+AsteroidsApp = function(veroldApp) {
 
   this.veroldApp = veroldApp;  
   this.mainScene;
@@ -8,8 +8,6 @@ AsteroidsApp = function(veroldApp,ui) {
 
   this.asteroid_template;
   this.projectile_template;
-
-  this.ui = ui;
 
   this.conversionScale = 3.55;
 
@@ -26,9 +24,6 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
 	this.veroldApp.loadScene( null, {
     
     success_hierarchy: function( scene ) {
-
-      // hide progress indicator
-      that.veroldApp.hideLoadingProgress();
 
       that.inputHandler = that.veroldApp.getInputHandler();
       that.renderer = that.veroldApp.getRenderer();
@@ -79,13 +74,13 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
 
       if(!!gameCallback) { gameCallback(); }
 
-      that.ui.hideLoadingProgress();
+      window.asteroids.ui.hideLoadingProgress();
 
     },
 
     progress: function(sceneObj) {
       var percent = Math.floor((sceneObj.loadingProgress.loaded_hierarchy / sceneObj.loadingProgress.total_hierarchy)*100);
-      that.ui.setLoadingProgress(percent); 
+      window.asteroids.ui.setLoadingProgress(percent); 
     }
 
   });

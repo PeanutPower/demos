@@ -15,7 +15,7 @@ function(my) {
     },
 
     initialize : function() {
-          
+      this.shieldStrength = $('#shield-strength');
     },
 
     setLoadingProgress : function(percent) {
@@ -37,6 +37,7 @@ function(my) {
         this.createLoadingProgress();
       }
       this.loadingProgress.hide();
+      this.showUI();
     },
 
     createLoadingProgress: function() {
@@ -58,6 +59,14 @@ function(my) {
       };
 
       this.loadingProgress = new LoadingProgress();
+    },
+
+    showUI : function() {
+      this.shieldStrength.show();
+    },
+
+    setShieldsStrength : function(shields) {
+      this.shieldStrength.find('.mask').css('width',shields+'%');
     }
 
   });

@@ -23,12 +23,11 @@ define([
       scale = stage.getScale(),
       coordsConversion;
 
-  // ui = new UserInterface(new CanvasWrapper($('<canvas id="ui">').appendTo('body')));
-
   if(!window.asteroids) {
     window.asteroids = {};
   }
   window.asteroids.events = new CustomEvents();
+  window.asteroids.ui = ui;
 
   stage.setContactListeners({
     BeginContact : function(contact) {
@@ -79,7 +78,7 @@ define([
       VAPI.onReady(function(){
 
         var veroldApp = new VeroldApp(),
-            asteroidsApp = new AsteroidsApp(veroldApp,ui);
+            asteroidsApp = new AsteroidsApp(veroldApp);
 
         veroldApps = {
           verold: veroldApp,

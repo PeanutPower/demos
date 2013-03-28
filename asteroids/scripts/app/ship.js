@@ -107,6 +107,8 @@ define([
 
     depleteShields : function() {
       this.attributes.shields -= 5;
+
+      window.asteroids.ui.setShieldsStrength(this.attributes.shields);
       if(this.attributes.shields <= 0)
         window.asteroids.events.trigger('game:gameover');
     },

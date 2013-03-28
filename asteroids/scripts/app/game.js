@@ -41,8 +41,9 @@ define([
 
       if((a.attributes.actorType === 'projectile' && b.attributes.actorType === 'asteroid') ||
         (a.attributes.actorType === 'asteroid' && b.attributes.actorType === 'projectile')) {
-        stage.scheduleActorForRemoval(a);
-        stage.scheduleActorForRemoval(b);
+        
+        target = (a.attributes.actorType === 'asteroid') ? a : b;
+        stage.scheduleActorForInactive(target);
       }
     }
   });

@@ -45,7 +45,9 @@ define([
         actors = [],
 
         // actors that will be removed outside of a time step
-        scheduledForRemoval = [],
+        actorsPendingRemoval = [],
+
+        actorsPendingInactive = [],
 
         // speed for logic loop which runs 
         // independently of animation loop
@@ -150,6 +152,7 @@ define([
 
         world.DrawDebugData();
         world.ClearForces();
+        this.deactivateActors();
         this.purgeDeadActors();
         // this.updateInfoPanel();
       },
@@ -162,7 +165,7 @@ define([
       updateActors : function(updTime) {
         var i = actors.length;
         while(i--) {
-          if(!!actors[i]) {
+          if(!!actors[i] && actors[i].isActive()) {
             actors[i].update(updTime);
           }
         }
@@ -231,14 +234,26 @@ define([
       },
 
       scheduleActorForRemoval : function(actor) {
-        scheduledForRemoval.push(actor);
+        actorsPendingRemoval.push(actor);
+      },
+
+      scheduleActorForInactive : function(actor) {
+        actorsPendingInactive.push(actor);
       },
 
       purgeDeadActors : function() {
-        var i = 0, l = scheduledForRemoval.length;
+        var i = 0, l = actorsPendingRemoval.length;
         for(i=0;i<l;i+=1) {
-          scheduledForRemoval[i].destroy();
+          actorsPendingRemoval[i].destroy();
         }
+      },
+
+      deactivateActors : function() {
+        var i = 0, l = actorsPendingInactive.length;
+        for(i=0;i<l;i+=1) {
+          actorsPendingInactive[i].setActive(false);
+        }
+        actorsPendingInactive.length = 0;
       },
 
       setVeroldApps : function(apps) {

@@ -7,6 +7,7 @@ AsteroidsApp = function(veroldApp,ui) {
   this.ship;
 
   this.asteroid_template;
+  this.projectile_template;
 
   this.ui = ui;
 
@@ -51,6 +52,11 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
       that.asteroid_template = that.mainScene.getObject('514d18e34ad09902000005a9');
       // remove initial model
       that.mainScene.removeChildObject(that.asteroid_template);
+
+      // saving reference to projectile model (template)
+      that.projectile_template = that.mainScene.getObject('51421b770b4e5d0200000376');
+      // remove initial model
+      that.mainScene.removeChildObject(that.projectile_template);
 
       that.ship = models[ _.keys( models )[0] ];
       var model = that.ship.threeData;

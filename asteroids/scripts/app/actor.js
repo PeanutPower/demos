@@ -24,7 +24,7 @@ define([
 
       this.scale = this.attributes.physics.getScale();
       this.stage = this.attributes.stage;
-      this.bounds = this.stage.getVeroldApps().asteroids.getOrthBounds();
+      this.asteroidsApp = this.stage.getVeroldApps().asteroids;
       this.coordinatesConversion = this.stage.getVeroldApps().asteroids.getPhysicsTo3DSpaceConverson();
 
       this.attributes.state = 'default';
@@ -46,6 +46,9 @@ define([
       this.fixture = physElements.fixture;
 
       this.body.SetUserData(this);
+
+      // can only be called after body is created
+      this.setActive(this.attributes.active || true);
 
       if(!!this.attributes.initialForce) {
         var localVector = this.attributes.physics.b2Vec2(this.attributes.initialForce,0),
@@ -136,19 +139,39 @@ define([
       }
     },
 
+    setActive : function(active) {
+
+      var m = this.attributes.model;
+
+      this.active = active;
+      this.body.SetActive(this.active);
+
+      if(!m) return;
+
+      if(this.active) {
+        m.getParentAsset().addChildObject(m);
+      } else {
+        m.getParentAsset().removeChildObject(m);
+      }
+    },
+
+    isActive : function() {
+      return this.active;
+    },
+
     correctPosition : function() {
       var x = this.attributes.modelPosition.x,
           y = this.attributes.modelPosition.y,
-          b = this.bounds;
-      if(x > b.right) { this.setWorldPosition(b.left,-y); }
-      if(x < b.left) { this.setWorldPosition(b.right,-y); }
-      if(y > b.top) { this.setWorldPosition(b.bottom,-y); }
-      if(y < b.bottom) { this.setWorldPosition(b.top,-y); }
+          b = this.asteroidsApp.getOrthBounds();
+      if(y > b.top) { this.setWorldPosition(x,-b.bottom); return; }
+      if(x > b.right) { this.setWorldPosition(b.left,-y); return; }
+      if(y < b.bottom) { this.setWorldPosition(x,-b.top); return; }
+      if(x < b.left) { this.setWorldPosition(b.right,-y); return; }
     },
 
     setWorldPosition : function(x,y) {
-      var nx * this.coordinatesConversion,
-          ny * this.coordinatesConversion;
+      var nx = x * this.coordinatesConversion,
+          ny = y * this.coordinatesConversion;
       this.body.SetPosition(this.attributes.physics.b2Vec2(nx,ny));
     }
 

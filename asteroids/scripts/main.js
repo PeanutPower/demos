@@ -8,7 +8,7 @@ requirejs.config({
     underscore : 'underscore-min',
     handlebars : 'handlebars-1.0.0.beta.6',
     myclass : 'my.class',
-    Box2D : 'Box2D',
+    Box2D : 'Box2D.min',
     verold_api_v1 : 'http://assets.verold.com/verold_api/verold_api_v1_norequire',
     VeroldApp : '../app/VeroldApp',
     AsteroidsApp : '../app/AsteroidsApp'

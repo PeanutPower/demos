@@ -1,6 +1,6 @@
 /*global define:true, my:true */
 
-define(['myclass','app/util'],
+define(['myclass','app/util','Box2D'],
 function(my,util) {
 
   // abbreviations for common Box2D classes/vars

@@ -164,7 +164,6 @@ define([
         while(i--) {
           if(!!actors[i]) {
             actors[i].update(updTime);
-            this.correctPosition(actors[i]);
           }
         }
       },
@@ -174,43 +173,6 @@ define([
         while(i--) {
           if(!!actors[i]) {
             actors[i].render();
-          }
-        }
-      },
-
-      correctPosition : function(actor) { // getionElement as arg
-        var bounds = veroldApps.asteroids.getOrthBounds(),
-            coordsConversion = veroldApps.asteroids.getPhysicsTo3DSpaceConverson();
-        if(actor) {
-          var body = actor.body,
-              op = actor.attributes.modelPosition,
-              scale = physics.getScale(),
-              nx,
-              ny;
-          
-          if(op.x > bounds.right) { 
-            nx = (bounds.left)*coordsConversion;
-            ny = (op.y)*coordsConversion;
-            body.SetPosition(physics.b2Vec2(nx,-ny));
-            return;
-          }
-          if(op.y > bounds.top) {
-            nx = (op.x)*coordsConversion;
-            ny = (bounds.bottom)*coordsConversion;
-            body.SetPosition(physics.b2Vec2(nx,-ny));
-            return;
-          }
-          if(op.x < bounds.left) {
-            nx = (bounds.right)*coordsConversion;
-            ny = (op.y)*coordsConversion;
-            body.SetPosition(physics.b2Vec2(nx,-ny));
-            return;
-          }
-          if(op.y < bounds.bottom) {
-            nx = (op.x)*coordsConversion;
-            ny = (bounds.top)*coordsConversion;
-            body.SetPosition(physics.b2Vec2(nx,-ny));
-            return;
           }
         }
       },

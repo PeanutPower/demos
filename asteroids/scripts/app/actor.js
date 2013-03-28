@@ -24,6 +24,7 @@ define([
 
       this.scale = this.attributes.physics.getScale();
       this.stage = this.attributes.stage;
+      this.bounds = this.stage.getVeroldApps().asteroids.getOrthBounds();
       this.coordinatesConversion = this.stage.getVeroldApps().asteroids.getPhysicsTo3DSpaceConverson();
 
       this.attributes.state = 'default';
@@ -96,6 +97,8 @@ define([
         model.quaternion.setFromAxisAngle(this.rotationVector,-this.attributes.angle);
 
         this.attributes.modelPosition = model.position;        
+
+        this.correctPosition();
       }
     },
 
@@ -131,6 +134,22 @@ define([
       if(!!this.attributes.model) {
         this.attributes.model.getParentAsset().removeChildObject(this.attributes.model);
       }
+    },
+
+    correctPosition : function() {
+      var x = this.attributes.modelPosition.x,
+          y = this.attributes.modelPosition.y,
+          b = this.bounds;
+      if(x > b.right) { this.setWorldPosition(b.left,-y); }
+      if(x < b.left) { this.setWorldPosition(b.right,-y); }
+      if(y > b.top) { this.setWorldPosition(b.bottom,-y); }
+      if(y < b.bottom) { this.setWorldPosition(b.top,-y); }
+    },
+
+    setWorldPosition : function(x,y) {
+      var nx * this.coordinatesConversion,
+          ny * this.coordinatesConversion;
+      this.body.SetPosition(this.attributes.physics.b2Vec2(nx,ny));
     }
 
   });

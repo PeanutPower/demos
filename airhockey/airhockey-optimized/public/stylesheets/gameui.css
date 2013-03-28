@@ -1,0 +1,210 @@
+body, input {
+  font-family: 'Rationale', sans-serif;
+}
+
+body {
+  color: white;
+}
+
+.goal {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 120px;
+  height: 80px;
+  text-align: center;
+  margin-left: -60px;
+  margin-top: -50px;
+  color: white;
+  font-size: 64pt;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.goal>p {
+  font-size: 32px;
+}
+
+#game-ui {
+  display: none;
+}
+
+#player1 {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  color: white;
+}
+
+#player2 {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  color: white;
+}
+
+#player1 {
+  text-align: left;
+  margin-left: 10px;
+}
+
+#player1 img {
+  float: left;
+}
+
+#player2 {
+  text-align: right;
+  margin-right: 10px;
+}
+
+#player2 img {
+  float: right;
+}
+
+.player img {
+  width: 64px;
+  font-size: 12pt;
+}
+
+.player {
+  width: 350px;
+  max-width: 40%;
+  height: 90px;
+  max-height: 25%;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 3px solid rgba(128, 128, 128, 0.8);
+  border-radius: 10px;
+  padding: 7px;
+  margin: 10px 0 0 0;
+}
+
+.player .score {
+  font-size: 18pt;
+}
+
+.player img {
+  padding: 5px;
+}
+
+.player h1 {
+  margin: 0;
+  padding: 0;
+}
+
+#spectators {
+  position: absolute;
+  right: 0px;
+  top: 200px;
+  list-style: none;
+}
+
+#spectators > li {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 3px solid rgba(128, 128, 128, 0.8);
+  border-radius: 10px;
+  font-size: 10pt;
+  width: 200px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  padding: 7px;
+}
+
+#spectators > li img {
+  width: 32px;
+  height: 32px;
+  float: left;
+  margin-right: 10px;
+}
+
+#player-setup {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 3px solid rgba(128, 128, 128, 0.8);
+  border-radius: 10px;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 300px;
+  height: 230px;
+  text-align: left;
+  margin-left: -150px;
+  margin-top: -115px;
+  padding: 10px;
+  display: none;
+  font-size: 16pt;
+}
+
+#player-setup input {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  margin: 5px;
+  padding: 5px;
+  border: 0px;
+  font-size: 14pt;
+}
+
+#game-menu {
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  font-size: 24pt;
+  z-index: 2;
+  padding: 15px;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+#about-dialog, #credits-dialog {
+  display: none;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 3px solid rgba(128, 128, 128, 0.8);
+  border-radius: 10px;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 600px;
+  height: 400px;
+  text-align: left;
+  margin-left: -300px;
+  margin-top: -200px;
+  padding: 10px;
+  font-size: 16pt;
+  overflow-y: scroll;
+}
+
+.settings-close, .about-close, .credits-close {
+  float: right;
+  display: block;
+}
+
+@media only screen and (max-device-width: 1280px) {
+  .player {
+    width: 200px !important;
+    height: 55px !important;
+    font-size: 7pt !important;
+  }
+
+  .player img {
+    width: 32px !important;
+  }
+
+  #spectators {
+    display: none;
+  }
+}
+
+#headers {
+  position: absolute;
+  width: 500px;
+  margin-left: -250px;
+  left: 50%;
+  text-align: center;
+  top: 30%;
+}
+
+#headers h1 {
+  font-size: 30pt;
+  color: #44ABDA;
+}

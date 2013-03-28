@@ -243,7 +243,6 @@ define([
         
         consoleData.infoItems.push({label:'Actors on Stage',value:numOfActors});
         consoleData.infoItems.push({label:'Active Actors',value:activeActors});
-        consoleData.infoItems.push({label:'Shields',value:ship.getShields()});
         // consoleData.infoItems.push({label:'fps',value:this.getFps()});
         infoPanel.html(infoPanelTemplate(consoleData));
       },

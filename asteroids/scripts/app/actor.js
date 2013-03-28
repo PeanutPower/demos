@@ -22,6 +22,11 @@ define([
 
     initialize : function() {
 
+      if(!(typeof this.attributes.active !== 'undefined' && this.attributes.active !== null)) {
+        this.attributes.active = true;
+      }
+      this.setActive(this.attributes.active);
+
       this.scale = this.attributes.physics.getScale();
       this.stage = this.attributes.stage;
       this.asteroidsApp = this.stage.getVeroldApps().asteroids;
@@ -37,7 +42,8 @@ define([
         angle: this.attributes.angle,
         radius: this.attributes.radius,
         angularDamping: this.attributes.angularDamping || 0,
-        linearDamping: this.attributes.linearDamping || 0
+        linearDamping: this.attributes.linearDamping || 0,
+        active: this.attributes.active
       };
 
       var physElements = this.attributes.physics.createBody(bodyConfig);
@@ -47,41 +53,23 @@ define([
 
       this.body.SetUserData(this);
 
-      // can only be called after body is created
-      this.setActive(this.attributes.active || true);
 
       if(!!this.attributes.initialForce) {
-        var localVector = this.attributes.physics.b2Vec2(this.attributes.initialForce,0),
-            worldVector = this.body.GetWorldVector(localVector);
-        this.body.SetLinearVelocity(worldVector,this.body.GetWorldCenter());
+        this.setLinearVelocityFromForce(this.attributes.initialForce);
       }
 
       if(!!this.attributes.angularVelocity) {
-        this.body.SetAngularVelocity(util.tr(this.attributes.angularVelocity));
+        this.setAngularVelocity(this.attributes.angularVelocity);
       }
 
       if(!!this.attributes.model) {
         this.setModel(this.attributes.model);
       }
 
+      if(!!this.attributes.modelScale && this.hasModel()) {
+        this.attributes.model.threeData.scale.multiplyScalar(this.attributes.modelScale);
+      }
 
-      // create vector graphic
-      // if(!this.attributes.states) {
-      //   this.attributes.states = {
-      //     'default':{
-      //       'points':util.generateCircPoints(8,this.attributes.radius*this.scale),
-      //       'scale':this.attributes.drawScale || 1,
-      //       'drawStyles':{
-      //         'lineWidth':3.0,
-      //         'lineCap':'round',
-      //         'lineJoin':'round',
-      //         'strokeStyle':'#111',
-      //         'fillStyle':'#666666'
-      //       }
-      //     }
-      //   };
-      // }
-      //
       this.rotationVector = new THREE.Vector3(0,0,1);
 
     },
@@ -110,7 +98,6 @@ define([
     },
 
     setModel : function(model) {
-      model.threeData.scale.multiplyScalar(5);
       this.attributes.model = model;
     },
 
@@ -122,57 +109,82 @@ define([
       return this.attributes.states;
     },
 
-    render : function() {
-      // var canvas = this.attributes.stage.getCanvas();
-      // canvas.drawShape(_.extend({
-      //   direction: this.attributes.angle,
-      //   position: this.attributes.position
-      // },this.attributes.states[this.attributes.state]));
-    },
-
     destroy : function() {
       this.body.DestroyFixture(this.fixture);
       this.attributes.physics.getWorld().DestroyBody(this.body);
       this.attributes.stage.removeActor(this);
       if(!!this.attributes.model) {
+        // TODO: this is not a true destroy. Ask Mike about how this is done again.
         this.attributes.model.getParentAsset().removeChildObject(this.attributes.model);
       }
     },
 
     setActive : function(active) {
 
-      var m = this.attributes.model;
-
-      this.active = active;
-      this.body.SetActive(this.active);
-
-      if(!m) return;
-
-      if(this.active) {
-        m.getParentAsset().addChildObject(m);
-      } else {
-        m.getParentAsset().removeChildObject(m);
+      var delay = (active) ? 20 : 0;
+      this.attributes.active = active;
+      if(!!this.body) {
+        this.body.SetActive(this.attributes.active);
       }
+
+      setTimeout($.proxy(function() {
+        this.visible(this.attributes.active);
+      },this), delay);
+
     },
 
     isActive : function() {
-      return this.active;
+      return this.attributes.active;
     },
 
     correctPosition : function() {
       var x = this.attributes.modelPosition.x,
           y = this.attributes.modelPosition.y,
           b = this.asteroidsApp.getOrthBounds();
-      if(y > b.top) { this.setWorldPosition(x,-b.bottom); return; }
-      if(x > b.right) { this.setWorldPosition(b.left,-y); return; }
-      if(y < b.bottom) { this.setWorldPosition(x,-b.top); return; }
-      if(x < b.left) { this.setWorldPosition(b.right,-y); return; }
+      if(y > b.top) { this.setPosition3DCoords(x,-b.bottom); return; }
+      if(x > b.right) { this.setPosition3DCoords(b.left,-y); return; }
+      if(y < b.bottom) { this.setPosition3DCoords(x,-b.top); return; }
+      if(x < b.left) { this.setPosition3DCoords(b.right,-y); return; }
     },
 
-    setWorldPosition : function(x,y) {
+    setPosition3DCoords : function(x,y) {
       var nx = x * this.coordinatesConversion,
           ny = y * this.coordinatesConversion;
       this.body.SetPosition(this.attributes.physics.b2Vec2(nx,ny));
+    },
+
+    setPosition : function(position) {
+      this.body.SetPosition(position);
+    },
+
+    setLinearVelocityFromForce : function(force) {
+      var localVector = this.attributes.physics.b2Vec2(force,0),
+          worldVector = this.body.GetWorldVector(localVector);
+      this.body.SetLinearVelocity(worldVector,this.body.GetWorldCenter());
+    },
+
+    setAngularVelocity : function(angularVelocity) {
+      this.body.SetAngularVelocity(util.tr(this.attributes.angularVelocity));
+    },
+
+    setAngle : function(angle) {
+      this.body.SetAngle(angle);    
+    },
+
+    getType : function() {
+      return this.attributes.actorType;
+    },
+
+    hasModel : function() {
+      return !!this.attributes.model;
+    },
+
+    visible : function(bool) {
+      if(!this.attributes.model) return;
+
+      this.attributes.model.traverse(function(obj) {
+        obj.threeData.visible = bool;
+      });
     }
 
   });

@@ -50,21 +50,21 @@ table {
 /* reset css ends here */
 
 * {
-    margin:0;
-    padding:0;
+  margin:0;
+  padding:0;
 }
 
 html, body {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 body {
-    font-family:monospace;
-    font-size:62.5%;
-    background:#000;
-    background:url(../gfx/milkyway.jpg) repeat top center;
+  font-family:monospace;
+  font-size:62.5%;
+  background:#000;
+  background:url(../gfx/milkyway.jpg) repeat top center;
 }
 
 #b2d-debug {
@@ -75,38 +75,37 @@ body {
 }
 
 #main {
-    margin:0 auto;
-    width:1000px;
+  margin:0 auto;
+  width:1000px;
 }
 
 #infoPanel {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding:20px;
-    line-height:30px;
-    width: 600px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding:20px;
+  line-height:30px;
 }
 
 #infoPanel ul {
-    list-style-type:none;
+  list-style-type:none;
 }
 
 #infoPanel ul li {
-    font-size:2.5em;
-    color:white;
+  font-size:2.5em;
+  color:white;
 }
 
 #infoPanel ul li span {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .msgtrue {
-    color:#00ff00;
+  color:#00ff00;
 }
 
 .msgfalse {
-    color:#ff0000;
+  color:#ff0000;
 }
 
 #ui {

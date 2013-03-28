@@ -22,28 +22,7 @@ define([
       this.attributes = {},
       this.attributes = _.extend(this.attributes,config);
 
-      this.nose = new Point(40,0); 
-
-      this.attributes.states = {
-        'default':{
-          'points':[
-            {x:-20, y:  0}, // tail
-            {x:-10, y: 15},
-            {x: -2, y: 15},
-            this.nose, // nose
-            {x: -2, y:-15},
-            {x:-10, y:-15}
-          ],
-          'scale':this.attributes.drawScale || 2,
-          'drawStyles':{
-            'lineWidth':3.0,
-            'lineCap':'round',
-            'lineJoin':'round',
-            'strokeStyle':'#111',
-            'fillStyle':'#666666'
-          }
-        }
-      };
+      this.nose = new Point(10,0); 
 
       this.attributes.shields = 100;
       this.attributes.force = 4000;
@@ -103,35 +82,28 @@ define([
       var localNoseVector,
           worldNoseVector,
           bodyPosition,
-          scale,
           nosePosition,
-          projConf,
           localVector,
           worldVector,
-          force;
+          force,
+          projectile;
 
-      localNoseVector = this.attributes.physics.b2Vec2(this.nose.x*2.5,this.nose.y);
+      localNoseVector = this.attributes.physics.b2Vec2(this.nose.x,this.nose.y);
       worldNoseVector = this.body.GetWorldVector(localNoseVector);
-      bodyPosition = this.attributes.physics.getBodyPosition(this.body);
+      bodyPosition = this.attributes.physics.getBodyPositionCopy(this.body);
       nosePosition = this.attributes.physics.addVector2(worldNoseVector,bodyPosition);
 
       localVector = this.attributes.physics.b2Vec2(10000,0);
       worldVector = this.body.GetWorldVector(localVector);
       force = this.attributes.physics.addVector2(this.body.GetLinearVelocity(),worldVector);
 
-      // console.info(force.Length());
-
-      projConf = {
-        actorType: 'projectile',
-        position: nosePosition,
-        radius: 0.5,
-        angle: this.body.GetAngle(),
-        initialForce: force.Length()
-      };
-
-      this.attributes.stage.createActor(projConf);
-
-    },100),
+      projectile = this.attributes.stage.getInactiveActor('projectile');
+      projectile.setPosition(nosePosition);
+      projectile.setAngle(this.body.GetAngle());
+      projectile.setLinearVelocityFromForce(force.Length());
+      projectile.setActive(true);
+      
+    },150),
 
     depleteShields : function() {
       this.attributes.shields -= 5;

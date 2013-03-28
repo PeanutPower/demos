@@ -107,16 +107,29 @@ AsteroidsApp.prototype.createAsteroidModel = function(callback) {
   this.asteroid_template.clone({
     success_hierarchy: function(clonedAsteroid) {
       that.mainScene.addChildObject(clonedAsteroid);
+
+      // this is where asteroids are first rotated about an arbitrary angle
       clonedAsteroid.traverse(function(obj) {
         if(obj.entityModel.get('name').match(/^default.*/) && obj.type === "mesh") {
           var vec3 = new THREE.Vector3(angles[0],angles[1],angles[2])
           obj.threeData.quaternion.setFromEuler(vec3);
         }
       });
+
       if(!!callback) { callback(clonedAsteroid); }
     }
   })
 
+};
+
+AsteroidsApp.prototype.createProjectileModel = function(callback) {
+  var that = this;
+  this.projectile_template.clone({
+    success_hierarchy: function(clonedProjectile) {
+      that.mainScene.addChildObject(clonedProjectile);
+      if(!!callback) { callback(clonedProjectile); }
+    }
+  });
 };
 
 AsteroidsApp.prototype.shutdown = function() {

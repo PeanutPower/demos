@@ -140,6 +140,12 @@ function(my,util) {
       body = this.world.CreateBody(bodyDef);
       fixture = body.CreateFixture(fixDef);
 
+      if(typeof config.active !== 'undefined' && config.active !== null) {
+        if(!config.active) {
+          body.SetActive(false);
+        }
+      }
+
       return {body:body,fixture:fixture};
     },
 
@@ -147,11 +153,10 @@ function(my,util) {
       return new b2Vec2(x,y);
     },
 
-    getBodyPosition : function(body) {
+    getBodyPositionCopy : function(body) {
       var bodyPosition;
       bodyPosition = body.GetPosition();
       bodyPosition = this.b2Vec2(bodyPosition.x,bodyPosition.y);
-      bodyPosition.Multiply(this.scale);
       return bodyPosition;
     },
 

@@ -44,10 +44,11 @@ define([
         // stores a list of motion objects
         actors = [],
 
-        // actors that will be removed outside of a time step
+        // actors that will be removed outside of a time step.
+        // List is cleared after all actors removed.
         actorsPendingRemoval = [],
 
-        actorsPendingInactive = [],
+        actorTypes = {},
 
         // speed for logic loop which runs 
         // independently of animation loop
@@ -96,6 +97,14 @@ define([
           // , debug: true
         });
         actorFactory = new ActorFactory({'stage':this});
+
+        if(!window.asteroids) {
+          window.asteroids = {};
+        }
+        window.asteroids.debugActors = function() {
+          console.info(actors);
+        }
+
       },
 
       initAnim : function() {
@@ -152,9 +161,11 @@ define([
 
         world.DrawDebugData();
         world.ClearForces();
-        this.deactivateActors();
+
+        // perform any actions on waiting actors
         this.purgeDeadActors();
-        // this.updateInfoPanel();
+
+        this.updateInfoPanel();
       },
 
       render : function(time) {
@@ -181,7 +192,7 @@ define([
       },
 
       addActor : function(actor) {
-          actors.push(actor);
+        actors.push(actor);
       },
 
       removeActor : function(actor) {
@@ -225,9 +236,13 @@ define([
       updateInfoPanel : function() {
         consoleData.infoItems = [];
         var numOfActors = actors.length;
+        var activeActors = _.filter(actors,function(actor){
+          return actor.isActive();
+        }).length;
         var ship = actors[0];
         
         consoleData.infoItems.push({label:'Actors on Stage',value:numOfActors});
+        consoleData.infoItems.push({label:'Active Actors',value:activeActors});
         consoleData.infoItems.push({label:'Shields',value:ship.getShields()});
         // consoleData.infoItems.push({label:'fps',value:this.getFps()});
         infoPanel.html(infoPanelTemplate(consoleData));
@@ -237,23 +252,24 @@ define([
         actorsPendingRemoval.push(actor);
       },
 
-      scheduleActorForInactive : function(actor) {
-        actorsPendingInactive.push(actor);
-      },
-
       purgeDeadActors : function() {
         var i = 0, l = actorsPendingRemoval.length;
+        if(!l) return;
         for(i=0;i<l;i+=1) {
           actorsPendingRemoval[i].destroy();
         }
+        actorsPendingRemoval.length = 0;
       },
 
-      deactivateActors : function() {
-        var i = 0, l = actorsPendingInactive.length;
-        for(i=0;i<l;i+=1) {
-          actorsPendingInactive[i].setActive(false);
+      getInactiveActor : function(type) {
+        if(!(type in actorTypes)) {
+          actorTypes[type] = _.filter(actors,function(actor) {
+            return actor.getType() === type;
+          });
         }
-        actorsPendingInactive.length = 0;
+        return _(actorTypes[type]).chain().filter(function(actor) {
+          return !actor.isActive();
+        }).first().value();
       },
 
       setVeroldApps : function(apps) {

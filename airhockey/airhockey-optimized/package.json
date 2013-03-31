@@ -1,0 +1,29 @@
+{
+  "name": "verold-airhockey-ng",
+  "version": "0.1.0-43",
+  "private": true,
+  "subdomain": "airhockey-ng",
+  "author": {
+    "name": "Derrick Weis",
+    "email": "derrick@derrickweis.com",
+    "url": "http://derrickweis.com"
+  },
+  "engines": {
+    "node": ">=0.6"
+  },
+  "scripts": {
+    "start": "node ./app.js"
+  },
+  "dependencies": {
+    "express": "3.0.0rc4",
+    "box2dweb-commonjs": "2.1.0",
+    "socket.io": "0.9.13",
+    "node-uuid": "1.4.0",
+    "backbone": "0.9.10",
+    "browserify": "2.4.1",
+    "underscore": "1.4.4",
+    "handleify": "0.1.1",
+    "tween": "0.8.0",
+    "through": "2.2.2"
+  }
+}

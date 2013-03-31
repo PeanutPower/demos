@@ -44,8 +44,11 @@ define([
         // stores a list of motion objects
         actors = [],
 
-        // actors that will be removed outside of a time step
-        scheduledForRemoval = [],
+        // actors that will be removed outside of a time step.
+        // List is cleared after all actors removed.
+        actorsPendingRemoval = [],
+
+        actorTypes = {},
 
         // speed for logic loop which runs 
         // independently of animation loop
@@ -58,7 +61,7 @@ define([
         infoPanelTemplate = Handlebars.compile(util.cleanTemplate('#info-panel-template')),
         
         // DOM node for information output
-        infoPanel = $('#infoPanel'),
+        infoPanel = $('#info-panel'),
 
         renderInterval = null,
 
@@ -94,6 +97,14 @@ define([
           // , debug: true
         });
         actorFactory = new ActorFactory({'stage':this});
+
+        if(!window.asteroids) {
+          window.asteroids = {};
+        }
+        window.asteroids.debugActors = function() {
+          console.info(actors);
+        }
+
       },
 
       initAnim : function() {
@@ -150,8 +161,11 @@ define([
 
         world.DrawDebugData();
         world.ClearForces();
+
+        // perform any actions on waiting actors
         this.purgeDeadActors();
-        // this.updateInfoPanel();
+
+        this.updateInfoPanel();
       },
 
       render : function(time) {
@@ -162,9 +176,8 @@ define([
       updateActors : function(updTime) {
         var i = actors.length;
         while(i--) {
-          if(!!actors[i]) {
+          if(!!actors[i] && actors[i].isActive()) {
             actors[i].update(updTime);
-            this.correctPosition(actors[i]);
           }
         }
       },
@@ -178,24 +191,8 @@ define([
         }
       },
 
-      correctPosition : function(actor) { // getionElement as arg
-        var bounds = this.getBounds();
-        if(actor) {
-          var body = actor.body,
-              op = body.GetPosition(),
-              scale = physics.getScale(),
-              x = op.x * scale,
-              y = op.y * scale;
-          
-          if(x > bounds.x2) { body.SetPosition(physics.b2Vec2(bounds.x1/scale,op.y)); }
-          if(y > bounds.y2) { body.SetPosition(physics.b2Vec2(op.x,bounds.y1/scale)); }
-          if(x < bounds.x1) { body.SetPosition(physics.b2Vec2(bounds.x2/scale,op.y)); }
-          if(y < bounds.y1) { body.SetPosition(physics.b2Vec2(op.x,bounds.y2/scale)); }
-        }
-      },
-
       addActor : function(actor) {
-          actors.push(actor);
+        actors.push(actor);
       },
 
       removeActor : function(actor) {
@@ -239,27 +236,51 @@ define([
       updateInfoPanel : function() {
         consoleData.infoItems = [];
         var numOfActors = actors.length;
+        var activeActors = _.filter(actors,function(actor){
+          return actor.isActive();
+        }).length;
         var ship = actors[0];
         
         consoleData.infoItems.push({label:'Actors on Stage',value:numOfActors});
-        consoleData.infoItems.push({label:'Shields',value:ship.getShields()});
+        consoleData.infoItems.push({label:'Active Actors',value:activeActors});
         // consoleData.infoItems.push({label:'fps',value:this.getFps()});
         infoPanel.html(infoPanelTemplate(consoleData));
       },
 
       scheduleActorForRemoval : function(actor) {
-        scheduledForRemoval.push(actor);
+        actorsPendingRemoval.push(actor);
       },
 
       purgeDeadActors : function() {
-        var i = 0, l = scheduledForRemoval.length;
+        var i = 0, l = actorsPendingRemoval.length;
+        if(!l) return;
         for(i=0;i<l;i+=1) {
-          scheduledForRemoval[i].destroy();
+          actorsPendingRemoval[i].destroy();
         }
+        actorsPendingRemoval.length = 0;
+      },
+
+      getInactiveActor : function(type) {
+        if(!(type in actorTypes)) {
+          actorTypes[type] = _.filter(actors,function(actor) {
+            return actor.getType() === type;
+          });
+        }
+        return _(actorTypes[type]).chain().filter(function(actor) {
+          return !actor.isActive();
+        }).first().value();
       },
 
       setVeroldApps : function(apps) {
         veroldApps = apps;
+      },
+
+      getVeroldApps : function() {
+        return veroldApps;
+      },
+
+      getScale : function() {
+        return physics.getScale();
       }
     };
 

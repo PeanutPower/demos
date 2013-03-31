@@ -37,6 +37,12 @@ VeroldApp.prototype = {
     {
       that.trigger("resize");
     };
+
+    // handling any window resizing here
+    $(window).resize(function(e) {
+      that.trigger('resize');
+    });
+
     //Get the project assets from the given project ID.
     //If it's not passed in, get a default project.
     options.projectId;

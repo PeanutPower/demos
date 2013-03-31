@@ -3,7 +3,7 @@ BullRun = function( veroldApp ) {
   this.veroldApp = veroldApp;  
   this.mainScene;
   this.camera;
-  this.numDrivers = 2;
+  this.numDrivers = 5;
   this.numHumanPlayers = 1;
   this.physicsDebugOn = true;
   this.debug = true;
@@ -80,7 +80,12 @@ BullRun.prototype.shutdown = function() {
 
 BullRun.prototype.update = function( delta ) {
   
-  this.physicsWorker.postMessage( { name : "updateRequest", data: this.flock.physicsData } );
+  if ( !this.updateRequested ) {
+    this.physicsWorker.postMessage( { name : "updateRequest", data: this.flock.physicsData } );
+    this.updateRequested = true;
+  }
+
+  this.flock.update( delta );
 
   if ( this.debugCameraController ) this.debugCameraController.update( delta );
   if ( this.driverCameraController ) this.driverCameraController.update( delta );
@@ -101,6 +106,7 @@ BullRun.prototype.setupPhysicsWorker = function() {
   this.physicsWorker = new Worker( "javascripts/workerPhysics.js" );
   this.physicsWorker.onmessage = function (event) {
     //Received update from physics worker
+    that.updateRequested = false;
     for ( var x in event.data ) {
       that.track.vehicles[x].setPosition2D( event.data[x].position );
       that.track.vehicles[x].setAngle( event.data[x].angle );
@@ -204,7 +210,7 @@ BullRun.prototype.setupTrack = function( ) {
 }
 
 BullRun.prototype.setupFlockController = function( track ) {
-  this.flock = new FlockController( this.veroldApp );
+  this.flock = new FlockController( this.veroldApp, this.debug );
   this.flock.initialize( this.physicsWorker, track, this.numDrivers, this.numHumanPlayers );
 }
 
@@ -218,10 +224,17 @@ BullRun.prototype.onKeyPress = function( event ) {
     this.physicsDebugOn = !this.physicsDebugOn;
     this.flock.physicsSim.toggleDebugDraw( this.physicsDebugOn );
   }
-  else if ( event.keyCode === keyCodes['X'] ) {
-    for ( var x in this.flock.vehicles ) {
-      console.log( "Vehicle's velocity is ", this.flock.vehicles[x].physicsBody.GetLinearVelocity() );
-    }
+  else if ( event.keyCode === keyCodes['1'] ) {
+    this.flock.toggleRule(0);
+  }
+  else if ( event.keyCode === keyCodes['2'] ) {
+    this.flock.toggleRule(1);
+  }
+  else if ( event.keyCode === keyCodes['3'] ) {
+    this.flock.toggleRule(2);
+  }
+  else if ( event.keyCode === keyCodes['4'] ) {
+    this.flock.toggleRule(3);
   }
     
 }

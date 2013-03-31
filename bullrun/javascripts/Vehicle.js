@@ -74,7 +74,7 @@ Vehicle.prototype = {
             //Setup paint or other things unique to this vehicle?
             that.model = carInstance;
             //Bind to main update loop
-            that.veroldApp.on("update", that.update, that );
+            //that.veroldApp.on("update", that.update, that );
             //that.veroldApp.on("fixedUpdate", that.fixedUpdate, that );
             if ( options.success ) options.success( that );
 
@@ -100,15 +100,15 @@ Vehicle.prototype = {
 
   uninitialize : function() {
 	
-    this.veroldApp.off("update", this.update, this );
-    this.veroldApp.off("fixedUpdate", this.fixedUpdate, this );
+    //this.veroldApp.off("update", this.update, this );
+    //this.veroldApp.off("fixedUpdate", this.fixedUpdate, this );
   },
 
   update : function( delta ) {
     //From physics body, set the transform of the graphical vehicle.
     //this.track.
 
-    //this.calculatePhysics( );
+    this.calculatePhysics( );
 
     this._getLocalVectorFromWorld2D( this.forceVector, this.tempVector2D_2 );
     var roll = this.tempVector2D_2.y;
@@ -117,7 +117,7 @@ Vehicle.prototype = {
     //this._setVehicleOrientation( this.angle2D );
     this._setVehicleRoll( roll );
     
-    this.model.set( {"payload.position" : { x: this.position2D.x, y: 0, z: this.position2D.y }} );
+    //this.model.set( {"payload.position" : { x: this.position2D.x, y: 0, z: this.position2D.y }} );
   },
 
   fixedUpdate : function( delta ) {
@@ -132,6 +132,7 @@ Vehicle.prototype = {
 
   setPosition2D: function( position ) {
     //TODO set the y based on the height of the ground
+    this.position2D.Set( position.x, position.y );
     this.tempTransVector.set( position.x, 0, position.y );
     this.setPosition( this.tempTransVector );
   },

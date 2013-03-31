@@ -41,6 +41,9 @@ Track.prototype = {
         newNode.initialize( sceneObjs[x] );
         this.trackNodes.push( newNode );
         this.trackNodePositions.push( newNode.getPosition() );
+        if ( !this.debug ) {
+          //sceneObjs[x].setVisible( false );
+        }
       }
     }
 
@@ -168,10 +171,10 @@ Track.prototype = {
             width: collisionWidth,
             angle: angle,
             position: { x: posAvg.x, y: posAvg.y },
-            trackPos: u
+            trackPos: ( u + (0.5 / segments)) % 1.0, //position at middle of collision, not the end
           }
         }
-        //this.physicsSim.postMessage( trackObjData );
+        this.physicsSim.postMessage( trackObjData );
 
       }
 

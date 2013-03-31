@@ -61,9 +61,9 @@ DriverCameraController.prototype = {
   update: function( delta ) {
     
     if ( this.enableUpdates && this.targetDriver.vehicle ) {
-
+      var interp = Math.min( 1.0, delta * 3 );
       var targetPos = this.targetDriver.vehicle.getPosition();
-      this.currentTargetPos.lerp( targetPos, 0.15 );
+      this.currentTargetPos.lerp( targetPos, interp );
 
       var vehicleOrientation = this.targetDriver.vehicle.getOrientation();
       //this.camera.quaternion.slerp( targetOrientation, 0.5 );
@@ -71,7 +71,7 @@ DriverCameraController.prototype = {
       this.tempVector1.copy( this.offset );
       this.tempVector1.applyQuaternion( vehicleOrientation );
       this.tempVector1.add( targetPos );
-      this.camera.position.lerp( this.tempVector1, 0.15 );
+      this.camera.position.lerp( this.tempVector1, interp );
 
       //this.tempQuaternion1.lookAt( )
 

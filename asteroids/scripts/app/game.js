@@ -6,13 +6,15 @@ define([
   'app/util',
   'app/customevents',
   'app/userinterface',
+  'app/explosion',
   'Box2D'
 ] , function(
   Stage,
   ActorFactory,
   util,
   CustomEvents,
-  UserInterface
+  UserInterface,
+  Explosion
 ) {
 
 
@@ -42,6 +44,14 @@ define([
 
       if((a.attributes.actorType === 'projectile' && b.attributes.actorType === 'asteroid') ||
         (a.attributes.actorType === 'asteroid' && b.attributes.actorType === 'projectile')) {
+
+        target = (a.attributes.actorType === 'asteroid') ? a : b;
+
+        var exp = new Explosion({
+          veroldApps: veroldApps
+        });
+
+        exp.explode(target.attributes.position);
 
         setTimeout(function() {
           a.setActive(false);

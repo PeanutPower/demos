@@ -172,8 +172,9 @@ define([
         initTimingLoop : function(timing,callback,context) {
             var time = +new Date();
             return function() {
-                if((+new Date())-time > timing) {
-                    callback.call(context,time);
+                var now = (+new Date());
+                if(now-time > timing) {
+                    callback.call(context,time,now-time);
                     time = +new Date();
                 }
             };

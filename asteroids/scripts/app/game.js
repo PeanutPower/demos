@@ -48,10 +48,11 @@ define([
         target = (a.attributes.actorType === 'asteroid') ? a : b;
 
         var exp = new Explosion({
-          veroldApps: veroldApps
+          veroldApps: veroldApps,
+          position: target.attributes.position
         });
 
-        exp.explode(target.attributes.position);
+        exp.explode();
 
         setTimeout(function() {
           a.setActive(false);

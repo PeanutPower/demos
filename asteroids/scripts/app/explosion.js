@@ -38,7 +38,7 @@ define([
       this.elapsedTime = 0;
       this.coordsConversion = this.attributes.veroldApps.asteroids.getPhysicsTo3DSpaceConverson();
       this.geometry = new THREE.Geometry();
-      this.trajectories = [];
+      this.velocityVectors = [];
       this.colors = [];
 
       var i = 0,
@@ -57,7 +57,7 @@ define([
         this.colors[i].setHSV(this.hue,this.saturation,value);
 
         this.geometry.vertices.push(vertex);
-        this.trajectories.push(util.toPolar(this.randomPointWithinRadius(9)));
+        this.velocityVectors.push(util.toPolar(this.randomPointWithinRadius(9)));
       }
 
       this.geometry.colors = this.colors;
@@ -65,7 +65,7 @@ define([
       this.material = new THREE.ParticleBasicMaterial({
         size: this.particleSize,
         transparent: true,
-        opacity: 0.7,
+        opacity: 1,
         vertexColors: true,
         depthTest: false,
         depthWrite: false
@@ -127,14 +127,19 @@ define([
           point,
           temp = {x:null, y:null},
           elTime = this.elapsedTime * 0.008;
+
       for(i=0;i<l;i+=1) {
-        temp.mag = this.trajectories[i].mag * elTime;
-        temp.dir = this.trajectories[i].dir;
+        temp.mag = this.velocityVectors[i].mag * elTime;
+        temp.dir = this.velocityVectors[i].dir;
         point = util.toCartesian(temp);
         verts[i].x = (point.x + this.attributes.position.x)/this.coordsConversion;
         verts[i].y = (point.y + -this.attributes.position.y)/this.coordsConversion;
-
       }
+
+      if(this.material.opacity > 0.6) {
+        this.material.opacity -= 0.01;
+      }
+
       this.geometry.verticesNeedUpdate = true;
       this.elapsedTime += delta;
 

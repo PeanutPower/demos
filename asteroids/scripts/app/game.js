@@ -56,7 +56,9 @@ define([
           saturation: 62.3/100,
           value: 67.84/100,
           valueRange: 20/100,
-          opacityDelta: 0.01
+          opacityDelta: 0.01,
+          opacityLowerBoundry: 0.7,
+          frameDuration: 10 
         });
 
         exp.explode();

@@ -268,7 +268,7 @@ define([
         }
         return _(actorTypes[type]).chain().filter(function(actor) {
           return !actor.isActive();
-        }).first().value();
+        }).sort().first().value();
       },
 
       setVeroldApps : function(apps) {

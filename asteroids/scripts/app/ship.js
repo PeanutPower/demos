@@ -103,7 +103,7 @@ define([
       projectile.setLinearVelocityFromForce(force.Length());
       projectile.setActive(true);
       
-    },150),
+    },175),
 
     depleteShields : function() {
       this.attributes.shields -= 5;

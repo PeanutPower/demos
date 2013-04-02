@@ -48,8 +48,15 @@ define([
         target = (a.attributes.actorType === 'asteroid') ? a : b;
 
         var exp = new Explosion({
-          veroldApps: veroldApps,
-          position: target.attributes.position
+          coordsConversion: veroldApps.asteroids.getPhysicsTo3DSpaceConverson(),
+          mainScene: veroldApps.asteroids.mainScene,
+          position: target.attributes.position,
+
+          hue: 38/360,
+          saturation: 62.3/100,
+          value: 67.84/100,
+          valueRange: 20/100,
+          opacityDelta: 0.01
         });
 
         exp.explode();

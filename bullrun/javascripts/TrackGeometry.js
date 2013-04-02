@@ -118,7 +118,7 @@ THREE.TrackGeometry = function( path, segments, trackWidth, trackWidthSegments, 
 			ip = ( this.closed ) ? (i + 1) % this.segments : i + 1;
 			jp = (j + 1) % this.trackWidthSegments + 1;
 
-			a = this.grid[ i ][ j ];		// *** NOT NECESSARILY PLANAR ! ***
+			a = this.grid[ i ][ j ];
 			b = this.grid[ ip ][ j ];
 			c = this.grid[ ip ][ jp ];
 			d = this.grid[ i ][ jp ];

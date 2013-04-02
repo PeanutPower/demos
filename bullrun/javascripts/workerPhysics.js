@@ -17,6 +17,7 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2
 var updateRequested = false;
 //Records most recent input force data from client
 var updateData;
+var aabbQueryStarted = false;
 
 self.onmessage = function (event) {
     //Received a message from the application.
@@ -55,7 +56,7 @@ var localBB = [];
 var localFlockRange = 2;
 
 function update() {
-    timeoutID = setTimeout( update, 17  ); //Rounds timeout value to integer...
+    timeoutID = setTimeout( update, 16  ); //Rounds timeout value to integer...
 
     //Apply forces set by the application
     applyVehicleForces();
@@ -72,11 +73,13 @@ function update() {
     world.ClearForces();
 
     if ( updateRequested ) {
+      updateVehicleData();
       //Send updated data to the main application
       self.postMessage( this.vehicleData )
       updateRequested = false;
-      updateVehicleData();
+      
     }
+    
 }
 
 function applyVehicleForces() {
@@ -84,37 +87,76 @@ function applyVehicleForces() {
     for ( var x in updateData ) {
       vehicleBodies[x].ApplyForce( updateData[x].forceVector, vehicleBodies[x].GetWorldCenter() );
       vehicleBodies[x].ApplyTorque( updateData[x].torque );
+
+      //Temporarily wiping the input data to see if this stops some of the occilation.
+      updateData[x].forceVector.x = 0;
+      updateData[x].forceVector.y = 0;
+      updateData[x].torque = 0;
     }
   }
 }
 
 function updateVehicleData() {
   for ( var x in vehicleBodies ) {
-    var body = vehicleBodies[x];
-    vehicleData[ x ].nearbyVehicles = [];
-    vehicleData[ x ].nearbyObjects = [];
-    //Do a AABB test to find adjacent bodies
-    var position = body.GetPosition();
-    localBB[x].lowerBound.Set( position.x - localFlockRange, position.y - localFlockRange);
-    localBB[x].upperBound.Set( position.x + localFlockRange, position.y + localFlockRange);
-    world.QueryAABB( function( fixture ) {
-      //console.log("Fixture ", fixture, " is near driver # " + driverID );
-      if ( fixture.driverID !== undefined ) {
-        //if ( fixture.driverID != driverID ) {
-        vehicleData[ x ].nearbyVehicles.push( fixture.driverID );
-        //}
-      }
-      else {
-        vehicleData[ x ].nearbyObjects.push( { position: trackBodyPositions[ fixture.trackObjID ], trackPos: fixture.trackPos });
-      }
-    }, localBB[x] );
 
+    checkForNearbyObjects( x );
+    
+    var body = vehicleBodies[ x ];
     //Write the current body data to the structure for sending to the application
     vehicleData[x].angle = body.GetAngle();
     vehicleData[x].position = body.GetPosition();
     vehicleData[x].velocity = body.GetLinearVelocity();
     vehicleData[x].angularVelocity = body.GetAngularVelocity();
   }
+}
+
+function checkForNearbyObjects( vehicleID ) {
+  
+  var body = vehicleBodies[ vehicleID ];
+  vehicleData[ vehicleID ].nearbyVehicles = [];
+  vehicleData[ vehicleID ].nearbyObjects = [];
+  //Do a AABB test to find adjacent bodies
+  var position = body.GetPosition();
+  //if ( !aabbQueryStarted ) {
+  var aabb = localBB[vehicleID];
+  aabb.lowerBound.Set( position.x - localFlockRange, position.y - localFlockRange);
+  aabb.upperBound.Set( position.x + localFlockRange, position.y + localFlockRange);
+
+  for ( var x in vehicleFixtures ) {
+    if ( x !== vehicleID ) {
+      var aabb2 = vehicleFixtures[x].m_aabb;
+      if ( aabb.lowerBound.x < aabb2.upperBound.x && aabb.upperBound.x > aabb2.lowerBound.x ) {
+        if ( aabb.lowerBound.y < aabb2.upperBound.y && aabb.upperBound.y > aabb2.lowerBound.y ) {
+          vehicleData[ vehicleID ].nearbyVehicles.push( vehicleFixtures[x].driverID );
+        }
+      }
+    }
+  }
+
+  for ( var x in trackFixtures ) {
+    //if ( x !== vehicleID ) {
+      var fixture = trackFixtures[x];
+      var aabb2 = fixture.m_aabb;
+      if ( aabb.lowerBound.x < aabb2.upperBound.x && aabb.upperBound.x > aabb2.lowerBound.x ) {
+        if ( aabb.lowerBound.y < aabb2.upperBound.y && aabb.upperBound.y > aabb2.lowerBound.y ) {
+          vehicleData[ vehicleID ].nearbyObjects.push( { position: trackBodyPositions[ fixture.trackObjID ], trackPos: fixture.trackPos } );
+        }
+      }
+    //}
+  }
+  // m_aabb
+  // world.QueryAABB( function( fixture ) {
+  //   //console.log("Fixture ", fixture, " is near driver # " + driverID );
+  //   if ( fixture.driverID !== undefined ) {
+  //     //if ( fixture.driverID != driverID ) {
+  //     vehicleData[ vehicleID ].nearbyVehicles.push( fixture.driverID );
+  //     //}
+  //   }
+  //   else {
+  //     vehicleData[ vehicleID ].nearbyObjects.push( { position: trackBodyPositions[ fixture.trackObjID ], trackPos: fixture.trackPos });
+  //   }
+  // }, localBB[ vehicleID ] );
+
 }
 
 function createVehicle( vehicle ) {
@@ -140,6 +182,8 @@ function createVehicle( vehicle ) {
   var fixture = body.CreateFixture(fixDef);
   fixture.driverID = vehicle.driverID;
   vehicleFixtures.push( fixture );
+  body.SetPosition( vehicle.position );
+  body.SetAngle( vehicle.angle );
   vehicleData.push( { position: body.GetPosition(), angle: body.GetAngle(), nearbyVehicles: [], nearbyObjects: [], velocity: body.GetLinearVelocity(), angularVelocity: body.GetAngularVelocity() })
   localBB.push( new b2AABB() );
 }
@@ -168,12 +212,13 @@ function createTrackObject( object ) {
   trackBodies.push( body );
   var fixture = body.CreateFixture(fixDef);
   trackFixtures.push( fixture );
-  trackBodyPositions.push( body.GetPosition() );
+  
   fixture.trackObjID = trackBodyPositions.length;
 
   body.SetPosition( position );
   body.SetAngle( angle );
 
+  trackBodyPositions.push( body.GetPosition() );
   //This will be used later to determine a driver's track progress
   fixture.trackPos = object.trackPos;
 }

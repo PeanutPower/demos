@@ -3,10 +3,11 @@ BullRun = function( veroldApp ) {
   this.veroldApp = veroldApp;  
   this.mainScene;
   this.camera;
-  this.numDrivers = 2;
+  this.numDrivers = 5;
   this.numHumanPlayers = 1;
   this.physicsDebugOn = true;
   this.debug = true;
+  this.usePhysicsWorker = true;
 
   this.cameraMode = -1;
   this.physicsDebugRenderScale = 40;
@@ -40,11 +41,13 @@ BullRun.prototype.startup = function( ) {
       that.setupDebugCamera();
       that.setupCollisionDebugCamera();
 
-      that.setupPhysicsWorker();
-
-      that.physicsSim = new PhysicsController( that.veroldApp, that.physicsDebugRenderScale );
-      that.physicsSim.initialize( );
-
+      if ( that.usePhysicsWorker ) {
+        that.setupPhysicsWorker();
+      }
+      else {
+        that.physicsSim = new PhysicsController( that.veroldApp, that.physicsDebugRenderScale );
+        that.physicsSim.initialize( );
+      }
       that.setupTrack();
       that.setupFlockController( that.track );
 
@@ -80,7 +83,12 @@ BullRun.prototype.shutdown = function() {
 
 BullRun.prototype.update = function( delta ) {
   
-  this.physicsWorker.postMessage( { name : "updateRequest", data: this.flock.physicsData } );
+  if ( !this.updateRequested ) {
+    this.physicsSim.postMessage( { name : "updateRequest", data: this.flock.physicsData } );
+    this.updateRequested = true;
+  }
+
+  this.flock.update( delta );
 
   if ( this.debugCameraController ) this.debugCameraController.update( delta );
   if ( this.driverCameraController ) this.driverCameraController.update( delta );
@@ -98,9 +106,10 @@ BullRun.prototype.update = function( delta ) {
 
 BullRun.prototype.setupPhysicsWorker = function() {
   var that = this;
-  this.physicsWorker = new Worker( "javascripts/workerPhysics.js" );
-  this.physicsWorker.onmessage = function (event) {
+  this.physicsSim = new Worker( "javascripts/workerPhysics.js" );
+  this.physicsSim.onmessage = function (event) {
     //Received update from physics worker
+    that.updateRequested = false;
     for ( var x in event.data ) {
       that.track.vehicles[x].setPosition2D( event.data[x].position );
       that.track.vehicles[x].setAngle( event.data[x].angle );
@@ -111,7 +120,7 @@ BullRun.prototype.setupPhysicsWorker = function() {
     }
   };
   //Execute the worker but don't start its update loop.
-  this.physicsWorker.postMessage("");
+  this.physicsSim.postMessage("");
 }
 
 BullRun.prototype.cycleCamera = function( ) {
@@ -200,12 +209,14 @@ BullRun.prototype.setupDriverCamera = function( humanDriver ) {
 
 BullRun.prototype.setupTrack = function( ) {
   this.track = new Track( this.veroldApp, this.debug );
-  this.track.initialize( this.physicsWorker, this.mainScene );
+  //if ( this.usePhysicsWorker ) {
+    this.track.initialize( this.physicsSim, this.mainScene );
+  //}
 }
 
 BullRun.prototype.setupFlockController = function( track ) {
-  this.flock = new FlockController( this.veroldApp );
-  this.flock.initialize( this.physicsWorker, track, this.numDrivers, this.numHumanPlayers );
+  this.flock = new FlockController( this.veroldApp, this.debug );
+  this.flock.initialize( this.physicsSim, track, this.numDrivers, this.numHumanPlayers );
 }
 
 BullRun.prototype.onKeyPress = function( event ) {
@@ -218,10 +229,17 @@ BullRun.prototype.onKeyPress = function( event ) {
     this.physicsDebugOn = !this.physicsDebugOn;
     this.flock.physicsSim.toggleDebugDraw( this.physicsDebugOn );
   }
-  else if ( event.keyCode === keyCodes['X'] ) {
-    for ( var x in this.flock.vehicles ) {
-      console.log( "Vehicle's velocity is ", this.flock.vehicles[x].physicsBody.GetLinearVelocity() );
-    }
+  else if ( event.keyCode === keyCodes['1'] ) {
+    this.flock.toggleRule(0);
+  }
+  else if ( event.keyCode === keyCodes['2'] ) {
+    this.flock.toggleRule(1);
+  }
+  else if ( event.keyCode === keyCodes['3'] ) {
+    this.flock.toggleRule(2);
+  }
+  else if ( event.keyCode === keyCodes['4'] ) {
+    this.flock.toggleRule(3);
   }
     
 }

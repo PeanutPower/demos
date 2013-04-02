@@ -1,13 +1,14 @@
-FlockController = function( veroldApp ) {
-
+FlockController = function( veroldApp, debug ) {
+  this.debug = debug;
   this.veroldApp = veroldApp;
   this.localFlockRange = 2;
-  this.centreOfFlockMultiplier = 0.5;
+  this.centreOfFlockMultiplier = 0.25;
 
   //Controls the distance that drivers need to get to each other before they try to move away.
-  this.flockSpread = 2;
-  this.spreadStrength = 3;
+  this.flockSpread = 1;
+  this.spreadStrength = 0.4;
   this.flockSpeed = 4;
+  this.ruleToggles = [ true, false, false, false ];
   window.flock = this;
 }
 
@@ -36,44 +37,56 @@ FlockController.prototype = {
     
     this.physicsSim.postMessage("start");
     //Bind to main update loop
-    this.veroldApp.on("update", this.update, this );
+    //this.veroldApp.on("update", this.update, this );
   },
 
   uninitialize : function() {
 	
-    this.veroldApp.off("update", this.update, this );
+    //this.veroldApp.off("update", this.update, this );
+  },
+
+  toggleRule: function( ruleNum, on ) {
+    this.ruleToggles[ ruleNum ] = on !== undefined ? on : !this.ruleToggles[ ruleNum ];
+    console.log("Flocking rule #" + (ruleNum + 1) + " is now " + (this.ruleToggles[ ruleNum ] ? "on" : "off") );
   },
 
   update : function( delta ) {
     //Run flocking rules for each boid
     //First, we'll update the local information for each driver
     for ( var x in this.drivers ) {
-      //this.updateLocalFlockInfo( x );
+      
+      this.drivers[x].updatePositionOnTrack( );
 
       if ( this.drivers[x].vehicle ) {
       
         this.tempVector2D.Set( 0, 0 );
         
         //this.tempVector2D.Add( this.drivers[x].tendToPaceRabbit() );
-
         //Get each boid to try to follow the track's direction at a certain speed
-        //this.tempVector2D.Add( this.drivers[x].tendToTrackDirection( this.flockSpeed ) );
+        if ( this.ruleToggles[0])
+        this.tempVector2D.Add( this.drivers[x].tendToTrackDirection( this.flockSpeed ) );
 
         //For each boid, calculate the "centre of mass" of nearby boids and get a vector that represents the desired direction of travel
-        //this.tempVector2D.Add( this.drivers[x].tendToCentreOfFlock( this.centreOfFlockMultiplier ) );
+        if ( this.ruleToggles[1])
+        this.tempVector2D.Add( this.drivers[x].tendToCentreOfFlock( this.centreOfFlockMultiplier ) );
 
-        //this.tempVector2D.Add( this.drivers[x].tendToMaintainDistance( this.flockSpread, this.spreadStrength ) );
+        if ( this.ruleToggles[2])
+        this.tempVector2D.Add( this.drivers[x].tendToMaintainDistance( this.flockSpread, this.spreadStrength ) );
 
-        // this.tempVector2D.Add( this.drivers[x].tendToMatchVelocity() );
+        if ( this.ruleToggles[3])
+        this.tempVector2D.Add( this.drivers[x].tendToMatchVelocity() );
       
         //Using the combined vector, tell the driver where to go (via the vector)
-        //this.drivers[x].driveTowards( this.tempVector2D );
+        this.drivers[x].driveTowards( this.tempVector2D );
 
-        this.drivers[x].vehicle.calculatePhysics();
+        this.drivers[x].update( delta );
+        this.drivers[x].vehicle.update();
         this.physicsData[x].forceVector.x = this.drivers[x].vehicle.forceVector.x;
         this.physicsData[x].forceVector.y = this.drivers[x].vehicle.forceVector.y;
         this.physicsData[x].torque = this.drivers[x].vehicle.torque;
+        
       }
+
     }
 
 
@@ -87,7 +100,7 @@ FlockController.prototype = {
     this.numDrivers = numDrivers;
     this.drivers = [];
     for ( var x = 0; x < numDrivers; x++ ) {
-      this.drivers.push( new Driver( this.veroldApp, this ) );
+      this.drivers.push( new Driver( this.veroldApp, this, this.debug ) );
       this.drivers[x].initialize( x, this.track );
     }
   },

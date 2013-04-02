@@ -1,4 +1,4 @@
-AsteroidsApp = function(veroldApp,ui) {
+AsteroidsApp = function(veroldApp) {
 
   this.veroldApp = veroldApp;  
   this.mainScene;
@@ -7,11 +7,13 @@ AsteroidsApp = function(veroldApp,ui) {
   this.ship;
 
   this.asteroid_template;
+  this.projectile_template;
 
-  var width = $(window).width(), height = $(window).height();
-  this.orthTop = 14;
-  this.orthBottom = this.orthTop;
-  this.ui = ui;
+  this.conversionScale = 3.55;
+
+  this.resizeView();
+
+  $(window).resize($.proxy(this.resizeView,this));
   
 }
 
@@ -22,9 +24,6 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
 	this.veroldApp.loadScene( null, {
     
     success_hierarchy: function( scene ) {
-
-      // hide progress indicator
-      that.veroldApp.hideLoadingProgress();
 
       that.inputHandler = that.veroldApp.getInputHandler();
       that.renderer = that.veroldApp.getRenderer();
@@ -49,17 +48,16 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
       // remove initial model
       that.mainScene.removeChildObject(that.asteroid_template);
 
+      // saving reference to projectile model (template)
+      that.projectile_template = that.mainScene.getObject('51421b770b4e5d0200000376');
+      // remove initial model
+      that.mainScene.removeChildObject(that.projectile_template);
+
       that.ship = models[ _.keys( models )[0] ];
       var model = that.ship.threeData;
 
-      console.info(that.ship);
-
       //Create the camera
-      var width = $(window).width();
-      var height = $(window).height();
-      var topAndBottom = 14;
-      var leftAndRight = topAndBottom * (width/height);
-      that.camera = new THREE.OrthographicCamera(-leftAndRight,leftAndRight,topAndBottom,-topAndBottom, 0.1, 10000 );
+      that.camera = new THREE.OrthographicCamera(that.orthLeft,that.orthRight,that.orthTop,that.orthBottom, 0.1, 10000 );
       that.camera.up.set( 0, 1, 0 );
       that.camera.position.set( 0, 0, 20);
 
@@ -76,13 +74,13 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
 
       if(!!gameCallback) { gameCallback(); }
 
-      that.ui.hideLoadingProgress();
+      window.asteroids.ui.hideLoadingProgress();
 
     },
 
     progress: function(sceneObj) {
       var percent = Math.floor((sceneObj.loadingProgress.loaded_hierarchy / sceneObj.loadingProgress.total_hierarchy)*100);
-      that.ui.setLoadingProgress(percent); 
+      window.asteroids.ui.setLoadingProgress(percent); 
     }
 
   });
@@ -104,16 +102,29 @@ AsteroidsApp.prototype.createAsteroidModel = function(callback) {
   this.asteroid_template.clone({
     success_hierarchy: function(clonedAsteroid) {
       that.mainScene.addChildObject(clonedAsteroid);
+
+      // this is where asteroids are first rotated about an arbitrary angle
       clonedAsteroid.traverse(function(obj) {
         if(obj.entityModel.get('name').match(/^default.*/) && obj.type === "mesh") {
           var vec3 = new THREE.Vector3(angles[0],angles[1],angles[2])
           obj.threeData.quaternion.setFromEuler(vec3);
         }
       });
+
       if(!!callback) { callback(clonedAsteroid); }
     }
   })
 
+};
+
+AsteroidsApp.prototype.createProjectileModel = function(callback) {
+  var that = this;
+  this.projectile_template.clone({
+    success_hierarchy: function(clonedProjectile) {
+      that.mainScene.addChildObject(clonedProjectile);
+      if(!!callback) { callback(clonedProjectile); }
+    }
+  });
 };
 
 AsteroidsApp.prototype.shutdown = function() {
@@ -167,4 +178,35 @@ AsteroidsApp.prototype.onKeyPress = function( event ) {
   
   }
     
+}
+
+/* additional functions */
+AsteroidsApp.prototype.resizeView = function() {
+  var width = $(window).width(), height = $(window).height();
+  this.orthTop = 14;
+  this.orthBottom = -this.orthTop;
+  this.orthRight = this.orthTop * (width/height);
+  this.orthLeft = -this.orthRight;
+
+  if(!!this.camera) {
+    this.camera.top = this.orthTop;
+    this.camera.right = this.orthRight;
+    this.camera.bottom = this.orthBottom;
+    this.camera.left = this.orthLeft;
+
+    this.camera.updateProjectionMatrix();
+  }
+}
+
+AsteroidsApp.prototype.getOrthBounds = function() {
+  return {
+    top: this.orthTop,
+    left: this.orthLeft,
+    bottom: this.orthBottom,
+    right: this.orthRight
+  }
+}
+
+AsteroidsApp.prototype.getPhysicsTo3DSpaceConverson = function() {
+  return this.conversionScale;
 }

@@ -1,5 +1,5 @@
-Driver = function( veroldApp, flockingController ) {
-
+Driver = function( veroldApp, flockingController, debug ) {
+  this.debug = debug;
   this.veroldApp = veroldApp;
   this.flockController = flockingController;
 }
@@ -21,12 +21,65 @@ Driver.prototype = {
     this.localStaticCollision = [];
     this.tempVector2D_1 = new b2Vec2();
     this.tempVector2D_2 = new b2Vec2();
-    this.tempVector = new THREE.Vector3();
+    this.tempVector_1 = new THREE.Vector3();
+    this.tempVector_2 = new THREE.Vector3();
+    this.tempVector_3 = new THREE.Vector3();
   },
 
   uninitialize : function() {
 	
    // this.veroldApp.off("update", this.update, this );
+  },
+
+  //Using track position data stored in the roadside collision, find
+  //the closest track segments and determine a relative
+  //location for the driver. Using that, interpolate a track position for the driver.
+  updatePositionOnTrack: function() {
+    if ( this.localStaticCollision.length > 1 ) {
+      var numSegments = this.track.getNumSegments();
+      var first = this.localStaticCollision[0].trackPos;
+      var last = this.localStaticCollision[0].trackPos
+      //var last = -1;
+      for ( var x in this.localStaticCollision ) {
+        //var segNum = track.getSegmentNum( this.localStaticCollision[x].trackPos );
+        var pos = this.localStaticCollision[x].trackPos;
+        
+        //Set the first and last positions but check for looping
+        //by assuming that a vehicle can't be near segments spanning more
+        //than half the track.
+        if ( pos < first && (first - pos) < 0.5) {
+          first = pos;
+        }
+        else if ( pos > last && (pos - last) < 0.5 ) {
+          last = pos;
+        }
+        else if ( pos > last && (pos - last) > 0.5 ) {
+          first = pos;
+        }
+      }
+      var firstPos = this.track.trackCurve.getPointAt( first );
+      var lastPos = this.track.trackCurve.getPointAt( last );
+      this.tempVector2D_1.Set( firstPos.x, firstPos.z );
+      this.tempVector2D_2.Set( lastPos.x, lastPos.z );
+      this.tempVector2D_2.Subtract( this.tempVector2D_1 );
+      this.tempVector2D_1.Subtract( this.vehicle.getPosition2D() );
+      this.tempVector2D_1.Multiply( -1 );
+      // this.tempVector_1.subVectors( lastPos, firstPos );
+      // this.tempVector_2.subVectors( this.getPosition(), firstPos );
+      // var overlap = this.tempVector_2.dot( this.tempVector_1 );
+      var overlap = this.tempVector2D_1.x * this.tempVector2D_2.x + this.tempVector2D_1.y * this.tempVector2D_2.y;
+      overlap /= this.tempVector2D_2.Length();
+      //dot gives us the value to interpolate  between trackPos, get the point and take the y value
+      //does this make sense? Can't we use the x-z position to directly get the y somehow?
+      if ( first > last ) first = first - 1.0;
+      this.trackLoc = first * (1.0 - overlap) + last * overlap;
+      if ( this.trackLoc < 0.0 ) this.trackLoc = 1.0 + this.trackLoc;
+      this.trackLoc %= 1.0;
+      //var trackPos = this.track.trackCurve.getPointAt( trackLoc );
+      //Get the transform at this location by getting it before and after and then interpolating.
+      //Take tangent and binormal of transform and use them to orient the vehicle
+
+    }
   },
 
   //Boid rule to get flock to follow the road at the set pace
@@ -53,20 +106,14 @@ Driver.prototype = {
     this.tempVector2D_1.Set(0,0);
     //if we have a track object nearby, it will have the track position (0-1) stored in it
     //and we can use that to get the direction of travel.
-    var trackPos = undefined;
-    var distance, minDistance = Number.MAX_VALUE;
-    for ( var x in this.localStaticCollision ) {
+    var trackPos = this.trackLoc;
+    // var distance, minDistance = Number.MAX_VALUE;
+    // for ( var x in this.localStaticCollision ) {
       
-      var myPosition = this.vehicle.getPosition2D();
-      this.tempVector2D_1.Set( myPosition.x, myPosition.y );
-      var position = this.localStaticCollision[x].GetBody().GetPosition();
-      this.tempVector2D_1.Subtract( position );
-      distance = this.tempVector2D_1.Length();
-      if ( distance < minDistance ) {
-        trackPos = this.localStaticCollision[x].trackPos;
-        minDistance = distance;
-      }
-    }
+    //   if ( trackPos < this.localStaticCollision[x].trackPos ) {
+    //     trackPos = this.localStaticCollision[x].trackPos;
+    //   }
+    // }
 
     if ( trackPos !== undefined ) {
       var middlePos = this.track.trackCurve.getPointAt( trackPos );
@@ -91,14 +138,14 @@ Driver.prototype = {
       this.tempVector2D_2.y = middlePos.z - myPosition.y;
 
       var dot = this.tempVector2D_1.x * this.tempVector2D_2.x + this.tempVector2D_1.y * this.tempVector2D_2.y;
-      if ( dot > 0 ) {
+      //if ( dot > 0 ) {
         this.tempVector2D_1.Multiply( speed );
-        //this.tempVector2D_2.Multiply( (1 - dot) )
+        //this.tempVector2D_2.Multiply( speed / 2 )
         this.tempVector2D_1.Add( this.tempVector2D_2 );
-      }
-      else {
-        this.tempVector2D_1.Multiply( speed );
-      }
+      // }
+      // else {
+      //   this.tempVector2D_1.Multiply( speed );
+      // }
         
     }
 
@@ -149,7 +196,7 @@ Driver.prototype = {
     //Also maintain distance from track objects
     for ( var x in this.localStaticCollision ) {
       
-      var position = this.localStaticCollision[x].GetBody().GetPosition();
+      var position = this.localStaticCollision[x].position;
       this.tempVector2D_1.Subtract( position );
       distance = this.tempVector2D_1.Length();
       if ( distance < spread * 2.0 ) {
@@ -185,10 +232,12 @@ Driver.prototype = {
 
   driveTowards : function( driveVector ) {
 
-    this.driveArrow.position.copy( this.vehicle.getPosition() );
-    this.tempVector.set( driveVector.x, 0, driveVector.y )
-    this.driveArrow.setDirection( this.tempVector )
-    this.driveArrow.setLength( this.tempVector.length() )
+    if ( this.debug ) {
+      this.driveArrow.position.copy( this.vehicle.getPosition() );
+      this.tempVector_1.set( driveVector.x, 0, driveVector.y )
+      this.driveArrow.setDirection( this.tempVector_1 )
+      this.driveArrow.setLength( this.tempVector_1.length() )
+    }
 
     //Using the given vector, try to match our velocity to it.
     var currentDirection = this.vehicle.getDirectionVector2D();
@@ -249,15 +298,21 @@ Driver.prototype = {
         this.vehicle.steering = 0;
       }
     }
+    if ( this.vehicle ) {
+      this.vehicle.update( delta );
+    }
     
   },
 
   setVehicle : function( vehicle ) {
     this.vehicle = vehicle;
-    this.driveArrow = new THREE.ArrowHelper( new THREE.Vector3(1,0,0), new THREE.Vector3(), 1, 0x0000ff );
-    this.track.scene.threeData.add( this.driveArrow );
+    if ( this.debug ) {
+      this.driveArrow = new THREE.ArrowHelper( new THREE.Vector3(1,0,0), new THREE.Vector3(), 1, 0x0000ff );
+      this.track.scene.threeData.add( this.driveArrow );
+    }
+
     //Bind to main update loop
-    this.veroldApp.on("update", this.update, this );
+    //this.veroldApp.on("update", this.update, this );
   },
 
   onKeyPress : function( event ) {

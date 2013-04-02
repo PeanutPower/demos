@@ -19,29 +19,19 @@ define([
       this.attributes = {},
       this.attributes = _.extend(this.attributes,config);
 
-      var points = util.generateCircPoints(16,this.attributes.radius);
-
-      this.attributes.states = {
-        'default':{
-          'points':points,
-          'scale':this.attributes.drawScale || 20,
-          'drawStyles':{
-            'lineWidth':2.0,
-            'lineCap':'round',
-            'lineJoin':'round',
-            'strokeStyle':'#990000',
-            'fillStyle':'#cc0000'
-          }
-        }
-      };
-
       Projectile.Super.call(this,this.attributes);
 
-      // specify lifespan for projectile
-      setTimeout($.proxy(function() {
-        this.destroy();
-      },this), 500);
+    },
 
+    setActive : function(active) {
+      Projectile.Super.prototype.setActive.call(this,active);
+
+      if(active) {
+        // specify lifespan for projectile
+        setTimeout($.proxy(function() {
+          this.setActive(false);
+        },this), 500);
+      }
     }
 
   });

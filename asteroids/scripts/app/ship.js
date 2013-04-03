@@ -42,7 +42,7 @@ define([
 
     update : function() {
 
-      var keys = this.attributes.stage.getKeys(),
+      var keys = this.stage.getKeys(),
           localVector,
           worldVector,
           angle;
@@ -97,7 +97,7 @@ define([
       worldVector = this.body.GetWorldVector(localVector);
       force = this.attributes.physics.addVector2(this.body.GetLinearVelocity(),worldVector);
 
-      projectile = this.attributes.stage.getInactiveActor('projectile');
+      projectile = this.stage.getInactiveActor('projectile');
       projectile.setPosition(nosePosition);
       projectile.setAngle(this.body.GetAngle());
       projectile.setLinearVelocityFromForce(force.Length());

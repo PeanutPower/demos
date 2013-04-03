@@ -4,15 +4,11 @@ define([
   'myclass',
   'app/util',
   'app/point',
-  'app/actorfactory',
-  'app/physics',
   'app/canvaswrapper'
 ], function(
   my,
   util,
   Point,
-  ActorFactory,
-  Physics,
   CanvasWrapper
 ){
 
@@ -65,9 +61,7 @@ define([
 
         renderInterval = null,
 
-        gameLoopInterval = null,
-
-        actorFactory = null;
+        gameLoopInterval = null;
 
     // set up key event listeners
     $(document).keydown(function(e) {
@@ -89,12 +83,7 @@ define([
             return new Stage();
         }
 
-        physics = new Physics({
-          gravity: {x:0,y:0}
-          , scale: 10
-          // , debug: true
-        });
-        actorFactory = new ActorFactory({'stage':this});
+        physics = window.asteroids.get('physics');
 
       },
 
@@ -107,10 +96,6 @@ define([
 
       stopAnim : function() {
         clearInterval(gameLoopInterval);
-      },
-
-      getPhysics : function() {
-        return physics;
       },
 
       getTime : function() {
@@ -215,13 +200,10 @@ define([
       },
 
       createActor : function(config) {
-        var actor = actorFactory.createActor(config);
+        var actorFactory = window.asteroids.get('actorfactory'),
+            actor = actorFactory.createActor(config);
         this.addActor(actor);
         return actor;
-      },
-
-      setContactListeners : function(callbacks) {
-        physics.setContactListeners(callbacks);
       },
 
       updateInfoPanel : function() {
@@ -260,10 +242,6 @@ define([
         return _(actorTypes[type]).chain().filter(function(actor) {
           return !actor.isActive();
         }).sort().first().value();
-      },
-
-      getScale : function() {
-        return physics.getScale();
       }
     };
 

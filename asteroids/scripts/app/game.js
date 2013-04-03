@@ -8,6 +8,7 @@ define([
   'app/userinterface',
   'app/explosion',
   'app/objectpool',
+  'app/physics',
   'app/registry',
   'Box2D'
 ] , function(
@@ -18,6 +19,7 @@ define([
   UserInterface,
   Explosion,
   ObjectPool,
+  Physics,
   Registry
 ) {
 
@@ -28,17 +30,25 @@ define([
     };
   }
 
-  var stage = new Stage(),
-      gameActions,
-      scale = stage.getScale(),
-      explosionTemplate,
-      explosionPool = new ObjectPool(Explosion);
-
   if(!window.asteroids) {
     window.asteroids = new Registry();
   }
   window.asteroids.set('events',new CustomEvents());
   window.asteroids.set('ui',new UserInterface());
+  window.asteroids.set('actorfactory',new ActorFactory());
+  window.asteroids.set('physics',new Physics({
+    gravity: {x:0,y:0}
+    , scale: 10
+    // , debug: true
+  }));
+  window.asteroids.set('stage',new Stage());
+
+  var gameActions,
+      physics = window.asteroids.get('physics'),
+      scale = physics.getScale(),
+      stage = window.asteroids.get('stage'),
+      explosionTemplate,
+      explosionPool = new ObjectPool(Explosion);
 
   explosionTemplate = {
     hue: 38/360,
@@ -50,7 +60,7 @@ define([
     frameDuration: 10
   };
 
-  stage.setContactListeners({
+  physics.setContactListeners({
     BeginContact : function(contact) {
       var a = contact.GetFixtureA().GetBody().GetUserData(),
           b = contact.GetFixtureB().GetBody().GetUserData(),
@@ -78,7 +88,6 @@ define([
       }
     }
   });
-
 
   gameActions = {
     start : function(){

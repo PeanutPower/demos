@@ -27,8 +27,9 @@ define([
       }
       this.setActive(this.attributes.active);
 
+      this.attributes.physics = window.asteroids.get('physics');
       this.scale = this.attributes.physics.getScale();
-      this.stage = this.attributes.stage;
+      this.stage = window.asteroids.get('stage');
       this.asteroidsApp = window.asteroids.get('asteroidsApp');
       this.coordinatesConversion = this.asteroidsApp.getPhysicsTo3DSpaceConverson();
 
@@ -112,7 +113,7 @@ define([
     destroy : function() {
       this.body.DestroyFixture(this.fixture);
       this.attributes.physics.getWorld().DestroyBody(this.body);
-      this.attributes.stage.removeActor(this);
+      this.stage.removeActor(this);
       if(!!this.attributes.model) {
         // TODO: this is not a true destroy. Ask Mike about how this is done again.
         this.attributes.model.getParentAsset().removeChildObject(this.attributes.model);

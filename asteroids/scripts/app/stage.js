@@ -98,13 +98,6 @@ define([
         });
         actorFactory = new ActorFactory({'stage':this});
 
-        if(!window.asteroids) {
-          window.asteroids = {};
-        }
-        window.asteroids.debugActors = function() {
-          console.info(actors);
-        }
-
       },
 
       initAnim : function() {

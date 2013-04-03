@@ -7,6 +7,7 @@ define([
   'app/customevents',
   'app/userinterface',
   'app/explosion',
+  'app/objectpool',
   'Box2D'
 ] , function(
   Stage,
@@ -14,7 +15,8 @@ define([
   util,
   CustomEvents,
   UserInterface,
-  Explosion
+  Explosion,
+  ObjectPool
 ) {
 
 
@@ -23,13 +25,25 @@ define([
       veroldApps,
       ui = new UserInterface(),
       scale = stage.getScale(),
-      coordsConversion;
+      coordsConversion,
+      explosionTemplate,
+      explosionPool = new ObjectPool(Explosion);
 
   if(!window.asteroids) {
     window.asteroids = {};
   }
   window.asteroids.events = new CustomEvents();
   window.asteroids.ui = ui;
+
+  explosionTemplate = {
+    hue: 38/360,
+    saturation: 62.3/100,
+    value: 67.84/100,
+    valueRange: 20/100,
+    opacityDelta: 0.01,
+    opacityLowerBoundry: 0.7,
+    frameDuration: 10
+  };
 
   stage.setContactListeners({
     BeginContact : function(contact) {
@@ -47,21 +61,11 @@ define([
 
         target = (a.attributes.actorType === 'asteroid') ? a : b;
 
-        var exp = new Explosion({
-          coordsConversion: veroldApps.asteroids.getPhysicsTo3DSpaceConverson(),
-          mainScene: veroldApps.asteroids.mainScene,
-          position: target.attributes.position,
-
-          hue: 38/360,
-          saturation: 62.3/100,
-          value: 67.84/100,
-          valueRange: 20/100,
-          opacityDelta: 0.01,
-          opacityLowerBoundry: 0.7,
-          frameDuration: 10 
+        explosionTemplate.position = target.attributes.position;
+        var exp = explosionPool.alloc(explosionTemplate);
+        exp.explode(function() {
+          explosionPool.free(exp);
         });
-
-        exp.explode();
 
         setTimeout(function() {
           a.setActive(false);
@@ -75,6 +79,15 @@ define([
   gameActions = {
     start : function(){
       coordsConversion = veroldApps.asteroids.getPhysicsTo3DSpaceConverson();
+
+      explosionTemplate.coordsConversion = coordsConversion;
+      explosionTemplate.mainScene = veroldApps.asteroids.mainScene;
+
+      var i = 0, l = 5;
+      for(i=0;i<l;i+=1) {
+        explosionPool.alloc(explosionTemplate);
+      }
+      explosionPool.freeAll();
 
       stage.setVeroldApps(veroldApps);
 

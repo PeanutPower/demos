@@ -1,41 +1,102 @@
 /*global define:true */
 
-define([],function() {
+define(function() {
   
-  function Explosion(config) {
+  function Explosion() {
     if(!(this instanceof Explosion)) {
-      return new Explosion(config);
+      return new Explosion();
     }
-
-    this.attributes = {};
-    
-    // all of these values are defaults and can be overriden
-    // by a configuration object passed to constructor
-
-    // color and alpha settings
-    this.attributes.hue = 1;
-    this.attributes.saturation = 1;
-    this.attributes.value = 1;
-    this.attributes.valueRange = 0;
-    this.attributes.opacity = 1;
-    this.attributes.opacityDelta = 0;
-    this.attributes.opacityLowerBoundry = 0.6;
-    
-    // particle settings
-    this.attributes.particleSize = 0.1;
-    this.attributes.numOfParticles = 1000;
-    this.attributes.animationDuration = 10000; // milliseconds
-    this.attributes.frameDuration = 24; // milliseconds
-    this.attributes.coordsConversion = 1;
-
-    this.attributes = this.extend(this.attributes,config);
-
-    this.initialize();
   }
 
   Explosion.prototype = { 
 
     constructor: Explosion,
+
+    buildComponents : function() {
+
+      // geometry
+      this.geometry = new THREE.Geometry();
+
+      // random vectors for each particle
+      this.velocityVectors = [];
+
+      // vertex colors
+      this.colors = [];
+
+      var i = 0,
+          l = this.attributes.numOfParticles,
+          vertex;
+
+      for(i=0;i<l;i+=1) {
+        vertex = new THREE.Vector3();
+        vertex.x = 0;
+        vertex.y = 0;
+        vertex.z = 5;
+        this.geometry.vertices.push(vertex);
+
+        this.colors[i] = new THREE.Color();
+        this.setHSV(this.colors[i]);
+
+        this.velocityVectors.push(this.generateVelocityVector());
+      }
+
+      this.geometry.colors = this.colors;
+
+      this.material = new THREE.ParticleBasicMaterial();
+      this.configureMaterial(this.material);
+
+      this.particleSystem = new THREE.ParticleSystem(this.geometry,this.material);
+    },
+
+    initialize : function(firstAlloc,config) {
+
+      if(!(typeof firstAlloc !== 'undefined' && firstAlloc !== null)) {
+        firstAlloc = true;
+      }
+
+      this.attributes = {};
+      
+      // all of these values are defaults and can be overriden
+      // by a configuration object passed to constructor
+
+      // color and alpha settings
+      this.attributes.hue = 1;
+      this.attributes.saturation = 1;
+      this.attributes.value = 1;
+      this.attributes.valueRange = 0;
+      this.attributes.opacity = 1;
+      this.attributes.opacityDelta = 0;
+      this.attributes.opacityLowerBoundry = 0.6;
+      
+      // particle settings
+      this.attributes.particleSize = 0.1;
+      this.attributes.numOfParticles = 1000;
+      this.attributes.animationDuration = 10000; // milliseconds
+      this.attributes.frameDuration = 24; // milliseconds
+      this.attributes.coordsConversion = 1;
+
+      if(!!config) {
+        this.attributes = this.extend(this.attributes,config);
+      }
+
+      if(firstAlloc) { this.buildComponents(); }
+
+      this.configureMaterial(this.material);
+
+      var i = 0,
+          l = this.geometry.vertices.length,
+          vert;
+      for(i=0;i<l;i+=1) {
+        // vert = this.geometry.vertices[i];
+        // vertex.x = 0;
+        // vertex.y = 0;
+        // vertex.z = 5;
+        this.setHSV(this.colors[i]);
+      }
+
+      this.elapsedTime = 0;
+
+    },
 
     extend : function(destination,source) {
       var objProp = null;
@@ -48,37 +109,12 @@ define([],function() {
       return destination;
     },
 
-    initialize : function() {
-      this.elapsedTime = 0;
-      this.geometry = new THREE.Geometry();
-      this.velocityVectors = [];
-      this.colors = [];
+    generateVelocityVector : function() {
+      return this.toPolar(this.randomPointWithinRadius(9));
+    },
 
-      var i = 0,
-          l = this.attributes.numOfParticles,
-          vertex,
-          value,
-          valDiff;
-
-      for(i=0;i<l;i+=1) {
-        vertex = new THREE.Vector3();
-        vertex.x = 0;
-        vertex.y = 0;
-        vertex.z = 5;
-
-        valDiff = this.attributes.value - this.attributes.valueRange;
-        value = this.attributes.value + (Math.random() * valDiff) - (Math.random() * valDiff);
-
-        this.colors[i] = new THREE.Color();
-        this.colors[i].setHSV(this.attributes.hue,this.attributes.saturation,value);
-
-        this.geometry.vertices.push(vertex);
-        this.velocityVectors.push(this.toPolar(this.randomPointWithinRadius(9)));
-      }
-
-      this.geometry.colors = this.colors;
-
-      this.material = new THREE.ParticleBasicMaterial({
+    configureMaterial : function(material) {
+      this.extend(material,{
         size: this.attributes.particleSize,
         transparent: true,
         opacity: this.attributes.opacity,
@@ -86,12 +122,16 @@ define([],function() {
         depthTest: false,
         depthWrite: false
       });
-
-      this.particleSystem = new THREE.ParticleSystem(this.geometry,this.material);
-
     },
 
-    explode : function() {
+    setHSV : function(color) {
+        var valDiff = this.attributes.value - this.attributes.valueRange,
+            value = this.attributes.value + (Math.random() * valDiff) - (Math.random() * valDiff);
+
+        color.setHSV(this.attributes.hue,this.attributes.saturation,value);
+    },
+
+    explode : function(callback) {
 
       var i = 0,
           verts = this.particleSystem.geometry.vertices,
@@ -107,6 +147,7 @@ define([],function() {
       var interval = setInterval(animation,0);
       
       setTimeout($.proxy(function() {
+        !!callback && callback();
         clearInterval(interval);
         this.attributes.mainScene.threeData.remove(this.particleSystem);
       },this),this.attributes.animationDuration);

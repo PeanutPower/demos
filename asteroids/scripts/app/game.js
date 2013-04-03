@@ -139,7 +139,7 @@ define([
     addAsteroid : function() {
       var astApp = window.asteroids.get('asteroidsApp'),
           orthBnds = astApp.getOrthBounds(),
-          coordsConversion = window.asteroids.get('asteroidsApp').getPhysicsTo3DSpaceConverson(),
+          coordsConversion = astApp.getPhysicsTo3DSpaceConverson(),
           position = {
             x: util.randRange(orthBnds.left,orthBnds.right)*scale*coordsConversion,
             y: util.randRange(orthBnds.top,orthBnds.bottom)*scale*coordsConversion

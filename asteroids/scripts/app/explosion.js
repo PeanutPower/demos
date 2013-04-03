@@ -1,6 +1,12 @@
 /*global define:true */
 
 define(function() {
+
+  var aSlice = Array.prototype.slice,
+      oToString = Object.prototype.toString,
+      oType = function(o) {
+        return oToString.call(o,0).slice(8,-1).toLowerCase();
+      };
   
   function Explosion() {
     if(!(this instanceof Explosion)) {
@@ -51,9 +57,12 @@ define(function() {
       this.particleSystem = new THREE.ParticleSystem(this.geometry,this.material);
     },
 
-    initialize : function(firstAlloc,config) {
+    initialize : function(config) {
 
-      if(!(typeof firstAlloc !== 'undefined' && firstAlloc !== null)) {
+      var firstAlloc = aSlice.call(arguments,0).pop();
+
+      if(!(typeof firstAlloc !== 'undefined' && firstAlloc !== null) &&
+          oType(firstAlloc) === 'boolean') {
         firstAlloc = true;
       }
 

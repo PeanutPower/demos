@@ -21,7 +21,7 @@ function(my) {
 
       var instance,
           first = (!!this.pool.length) ? false : true,
-          args = [first].concat(Array.prototype.slice.call(arguments,0));
+          args = Array.prototype.slice.call(arguments,0).concat([first]);
 
       if(first) {
         instance = new this.objConstructor();
@@ -59,13 +59,8 @@ function(my) {
     },
 
     collect : function() {
-      var diff = _.difference(this.allocated,this.pool);
-
-      _.each(diff,function(el,idx,list) {
-        delete list[idx]; 
-      });
-
-      this.allocated = _.compact(diff);
+      // empty the pool
+      this.pool = [];
     },
 
     numAllocated : function() {

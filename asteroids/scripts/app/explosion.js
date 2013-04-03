@@ -12,6 +12,9 @@ define(function() {
 
     constructor: Explosion,
 
+    vector : {mag:0,dir:0},
+    point : {x:0,y:0},
+
     buildComponents : function() {
 
       // geometry
@@ -87,10 +90,6 @@ define(function() {
           l = this.geometry.vertices.length,
           vert;
       for(i=0;i<l;i+=1) {
-        // vert = this.geometry.vertices[i];
-        // vertex.x = 0;
-        // vertex.y = 0;
-        // vertex.z = 5;
         this.setHSV(this.colors[i]);
       }
 
@@ -160,13 +159,12 @@ define(function() {
           verts = this.geometry.vertices,
           l = verts.length,
           point,
-          temp = {x:null, y:null},
           elTime = this.elapsedTime * 0.008;
 
       for(i=0;i<l;i+=1) {
-        temp.mag = this.velocityVectors[i].mag * elTime;
-        temp.dir = this.velocityVectors[i].dir;
-        point = this.toCartesian(temp);
+        this.vector.mag = this.velocityVectors[i].mag * elTime;
+        this.vector.dir = this.velocityVectors[i].dir;
+        point = this.toCartesian(this.vector);
         verts[i].x = (point.x + this.attributes.position.x)/this.attributes.coordsConversion;
         verts[i].y = (point.y + -this.attributes.position.y)/this.attributes.coordsConversion;
       }
@@ -189,11 +187,12 @@ define(function() {
         return (Math.pow(p.x,2) + Math.pow(p.y,2)) < Math.pow(r,2);
       }
 
+      var rpoint;
       do {
-        point = this.randomPoint(radius);
-      } while(!inRadius(point,radius)); 
+        rpoint = this.randomPoint(radius);
+      } while(!inRadius(rpoint,radius)); 
 
-      return point;
+      return rpoint;
     },
 
     randomPoint : function(radius) {
@@ -230,11 +229,11 @@ define(function() {
     },
 
     calcMagnitude : function(p) {
-      return this.round(Math.sqrt(Math.pow(p.x,2)+Math.pow(p.y,2)),5);
+      return Math.sqrt(Math.pow(p.x,2)+Math.pow(p.y,2));
     },
 
     calcAngle : function(p) {
-      return this.round(Math.atan2(p.y,p.x),5);
+      return Math.atan2(p.y,p.x);
     },
 
     toPolar : function(p){
@@ -253,18 +252,17 @@ define(function() {
     },
 
     toCartesianX : function(mag,dir){
-      return this.round(mag * Math.cos(dir),5);
+      return mag * Math.cos(dir);
     },
 
     toCartesianY : function(mag,dir){
-      return this.round(mag * Math.sin(dir),5);
+      return mag * Math.sin(dir);
     },
 
     toCartesian : function (vec) {
-      return {
-        'x':this.toCartesianX(vec.mag,vec.dir),
-        'y':this.toCartesianY(vec.mag,vec.dir)
-      };
+      this.point.x = this.toCartesianX(vec.mag,vec.dir);
+      this.point.y = this.toCartesianY(vec.mag,vec.dir);
+      return this.point;
     },
 
     round : function(num,decimals) {

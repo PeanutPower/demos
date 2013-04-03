@@ -156,8 +156,7 @@ define(function() {
     animate : function(time,delta) {
 
       var i = 0,
-          verts = this.geometry.vertices,
-          l = verts.length,
+          l = this.geometry.vertices.length,
           point,
           elTime = this.elapsedTime * 0.008;
 
@@ -165,8 +164,8 @@ define(function() {
         this.vector.mag = this.velocityVectors[i].mag * elTime;
         this.vector.dir = this.velocityVectors[i].dir;
         point = this.toCartesian(this.vector);
-        verts[i].x = (point.x + this.attributes.position.x)/this.attributes.coordsConversion;
-        verts[i].y = (point.y + -this.attributes.position.y)/this.attributes.coordsConversion;
+        this.geometry.vertices[i].x = (point.x + this.attributes.position.x)/this.attributes.coordsConversion;
+        this.geometry.vertices[i].y = (point.y + -this.attributes.position.y)/this.attributes.coordsConversion;
       }
 
       if(this.material.opacity > this.attributes.opacityLowerBoundry) {
@@ -241,12 +240,12 @@ define(function() {
     },
 
     initTimingLoop : function(timing,callback,context) {
-      var time = +new Date();
+      var time = Date.now();
       return function() {
-        var now = (+new Date());
+        var now = Date.now();
         if(now-time > timing) {
           callback.call(context,time,now-time);
-          time = +new Date();
+          time = Date.now();
         }
       };
     },

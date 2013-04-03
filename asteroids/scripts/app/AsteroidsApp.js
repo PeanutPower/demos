@@ -74,13 +74,13 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
 
       if(!!gameCallback) { gameCallback(); }
 
-      window.asteroids.ui.hideLoadingProgress();
+      window.asteroids.get('ui').hideLoadingProgress();
 
     },
 
     progress: function(sceneObj) {
       var percent = Math.floor((sceneObj.loadingProgress.loaded_hierarchy / sceneObj.loadingProgress.total_hierarchy)*100);
-      window.asteroids.ui.setLoadingProgress(percent); 
+      window.asteroids.get('ui').setLoadingProgress(percent); 
     }
 
   });

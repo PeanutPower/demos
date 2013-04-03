@@ -8,6 +8,7 @@ define([
   'app/userinterface',
   'app/explosion',
   'app/objectpool',
+  'app/registry',
   'Box2D'
 ] , function(
   Stage,
@@ -16,24 +17,28 @@ define([
   CustomEvents,
   UserInterface,
   Explosion,
-  ObjectPool
+  ObjectPool,
+  Registry
 ) {
 
+  // shim for Date.now() for older browsers
+  if (!Date.now) {
+    Date.now = function now() {
+      return +(new Date);
+    };
+  }
 
   var stage = new Stage(),
       gameActions,
-      veroldApps,
-      ui = new UserInterface(),
       scale = stage.getScale(),
-      coordsConversion,
       explosionTemplate,
       explosionPool = new ObjectPool(Explosion);
 
   if(!window.asteroids) {
-    window.asteroids = {};
+    window.asteroids = new Registry();
   }
-  window.asteroids.events = new CustomEvents();
-  window.asteroids.ui = ui;
+  window.asteroids.set('events',new CustomEvents());
+  window.asteroids.set('ui',new UserInterface());
 
   explosionTemplate = {
     hue: 38/360,
@@ -52,8 +57,7 @@ define([
           target;
           
       if(a.attributes.actorType === 'ship' || b.attributes.actorType === 'ship') {
-        target = (a.attributes.actorType === 'ship') ? a : b;
-        window.asteroids.events.trigger('collision:ship',target);
+        window.asteroids.get('events').trigger('collision:ship');
       }
 
       if((a.attributes.actorType === 'projectile' && b.attributes.actorType === 'asteroid') ||
@@ -78,18 +82,17 @@ define([
 
   gameActions = {
     start : function(){
-      coordsConversion = veroldApps.asteroids.getPhysicsTo3DSpaceConverson();
 
-      explosionTemplate.coordsConversion = coordsConversion;
-      explosionTemplate.mainScene = veroldApps.asteroids.mainScene;
+      var astApp = window.asteroids.get('asteroidsApp');
+
+      explosionTemplate.coordsConversion = astApp.getPhysicsTo3DSpaceConverson();
+      explosionTemplate.mainScene = astApp.mainScene;
 
       var i = 0, l = 5;
       for(i=0;i<l;i+=1) {
         explosionPool.alloc(explosionTemplate);
       }
       explosionPool.freeAll();
-
-      stage.setVeroldApps(veroldApps);
 
       var that = this;
 
@@ -113,10 +116,8 @@ define([
         var veroldApp = new VeroldApp(),
             asteroidsApp = new AsteroidsApp(veroldApp);
 
-        veroldApps = {
-          verold: veroldApp,
-          asteroids: asteroidsApp
-        };
+        window.asteroids.set('veroldApp',veroldApp);
+        window.asteroids.set('asteroidsApp',asteroidsApp);
 
         veroldApp.initialize({
           container: null,
@@ -136,14 +137,16 @@ define([
     },
 
     addAsteroid : function() {
-      var orthBnds = veroldApps.asteroids.getOrthBounds(),
+      var astApp = window.asteroids.get('asteroidsApp'),
+          orthBnds = astApp.getOrthBounds(),
+          coordsConversion = window.asteroids.get('asteroidsApp').getPhysicsTo3DSpaceConverson(),
           position = {
             x: util.randRange(orthBnds.left,orthBnds.right)*scale*coordsConversion,
             y: util.randRange(orthBnds.top,orthBnds.bottom)*scale*coordsConversion
           },
           angularVelocity = 15;
 
-      veroldApps.asteroids.createAsteroidModel(function(model) {
+      astApp.createAsteroidModel(function(model) {
         stage.createActor({
           actorType: 'asteroid',
           position: position,
@@ -159,7 +162,9 @@ define([
 
     addProjectile : function() {
 
-      veroldApps.asteroids.createProjectileModel(function(model) {
+      var astApp = window.asteroids.get('asteroidsApp');
+
+      astApp.createProjectileModel(function(model) {
         stage.createActor({
           actorType: 'projectile',
           position: new Box2D.Common.Math.b2Vec2(0,0),
@@ -172,12 +177,14 @@ define([
     },
 
     addShip : function() {
+      var astApp = window.asteroids.get('asteroidsApp');
+
       stage.createActor({
         actorType: 'ship',
         position: new Box2D.Common.Math.b2Vec2(0,0),
         angle: 0,
         radius: 5,
-        model: veroldApps.asteroids.getShipModel(),
+        model: astApp.getShipModel(),
         modelScale: 5
       });
     }

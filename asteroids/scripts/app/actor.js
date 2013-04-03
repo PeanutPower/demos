@@ -29,8 +29,8 @@ define([
 
       this.scale = this.attributes.physics.getScale();
       this.stage = this.attributes.stage;
-      this.asteroidsApp = this.stage.getVeroldApps().asteroids;
-      this.coordinatesConversion = this.stage.getVeroldApps().asteroids.getPhysicsTo3DSpaceConverson();
+      this.asteroidsApp = window.asteroids.get('asteroidsApp');
+      this.coordinatesConversion = this.asteroidsApp.getPhysicsTo3DSpaceConverson();
 
       this.attributes.state = 'default';
 

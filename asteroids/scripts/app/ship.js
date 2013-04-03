@@ -34,7 +34,7 @@ define([
 
       Ship.Super.call(this,this.attributes);
 
-      window.asteroids.events.on('collision:ship',function(e,actor) {
+      window.asteroids.get('events').on('collision:ship',function(e) {
         this.depleteShields();
       },this);
   
@@ -108,9 +108,9 @@ define([
     depleteShields : function() {
       this.attributes.shields -= 5;
 
-      window.asteroids.ui.setShieldsStrength(this.attributes.shields);
+      window.asteroids.get('ui').setShieldsStrength(this.attributes.shields);
       if(this.attributes.shields <= 0)
-        window.asteroids.events.trigger('game:gameover');
+        window.asteroids.get('events').trigger('game:gameover');
     },
 
     getShields : function() {

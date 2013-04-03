@@ -67,9 +67,7 @@ define([
 
         gameLoopInterval = null,
 
-        actorFactory = null,
-
-        veroldApps = null;
+        actorFactory = null;
 
     // set up key event listeners
     $(document).keydown(function(e) {
@@ -262,14 +260,6 @@ define([
         return _(actorTypes[type]).chain().filter(function(actor) {
           return !actor.isActive();
         }).sort().first().value();
-      },
-
-      setVeroldApps : function(apps) {
-        veroldApps = apps;
-      },
-
-      getVeroldApps : function() {
-        return veroldApps;
       },
 
       getScale : function() {

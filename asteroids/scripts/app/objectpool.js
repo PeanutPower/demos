@@ -58,6 +58,16 @@ function(my) {
       } 
     },
 
+    collect : function() {
+      var diff = _.difference(this.allocated,this.pool);
+
+      _.each(diff,function(el,idx,list) {
+        delete list[idx]; 
+      });
+
+      this.allocated = _.compact(diff);
+    },
+
     numAllocated : function() {
       return this.allocated.length;
     },

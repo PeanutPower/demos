@@ -27,6 +27,8 @@ define([
     },
 
     projectileCollision : function(collider) {
+      var pos = {x:this.attributes.position.x,y:this.attributes.position.y};
+      window.asteroids.get('events').trigger('game:collision:asteroid-projectile',pos);
       this.setActive(false);
     }
 

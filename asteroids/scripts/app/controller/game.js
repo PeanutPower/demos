@@ -7,9 +7,9 @@ define([
   'app/actor/actorfactory',
   'app/util/util',
   'app/util/customevents',
-  'app/util/objectpool',
   'app/util/physics',
   'app/util/registry',
+  'app/controller/explosion',
   'Box2D'
 ] , function(
   my,
@@ -18,11 +18,10 @@ define([
   ActorFactory,
   util,
   CustomEvents,
-  ObjectPool,
   Physics,
-  Registry
+  Registry,
+  ExplosionController
 ) {
-
 
   var GameController = my.Class({
 
@@ -60,6 +59,8 @@ define([
       this.events.on('game:initVAPIComplete',this.initVAPIComplete,this);
       this.events.on('game:veroldAppStartupComplete',this.veroldAppStartupComplete,this);
 
+      this.events.on('game:collision:asteroid-projectile',this.collsionAsteroidProjectile,this);
+
     },
 
     setup : function() {
@@ -74,19 +75,6 @@ define([
 
     veroldAppStartupComplete : function() {
 
-      // var explosionTemplate,
-      //     explosionPool = new ObjectPool(Explosion);
-
-      // explosionTemplate = {
-      //   hue: 38/360,
-      //   saturation: 62.3/100,
-      //   value: 67.84/100,
-      //   valueRange: 20/100,
-      //   opacityDelta: 0.01,
-      //   opacityLowerBoundry: 0.7,
-      //   frameDuration: 10
-      // };
-      
       this.events.trigger('game:start');
     
     },
@@ -95,13 +83,9 @@ define([
 
       var that = this;
 
-      // explosionTemplate.coordsConversion = this.asteroidsApp.getPhysicsTo3DSpaceConverson();
-      // explosionTemplate.mainScene = this.asteroidsApp.mainScene;
-
-      // _.times(5,function() { explosionPool.alloc(explosionTemplate); });
-      // explosionPool.freeAll();
-      
       this.setContactListeners();
+
+      this.explosionController = new ExplosionController();
 
       this.addShip();
 
@@ -121,21 +105,8 @@ define([
           var a = contact.GetFixtureA().GetBody().GetUserData(),
               b = contact.GetFixtureB().GetBody().GetUserData();
               
-              a.collision(b);
-              b.collision(a);
-
-          // if((a.attributes.actorType === 'projectile' && b.attributes.actorType === 'asteroid') ||
-          //   (a.attributes.actorType === 'asteroid' && b.attributes.actorType === 'projectile')) {
-
-          //   target = (a.attributes.actorType === 'asteroid') ? a : b;
-
-          //   explosionTemplate.position = target.attributes.position;
-          //   var exp = explosionPool.alloc(explosionTemplate);
-          //   exp.explode(function() {
-          //     explosionPool.free(exp);
-          //   });
-
-          // }
+          a.collision(b);
+          b.collision(a);
         }
       });
     },
@@ -212,6 +183,10 @@ define([
         model: this.asteroidsApp.getShipModel(),
         modelScale: 5
       });
+    },
+
+    collsionAsteroidProjectile : function(position) {
+      this.explosionController.explode({position:position});
     }
 
   });

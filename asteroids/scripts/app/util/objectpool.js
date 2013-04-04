@@ -69,6 +69,13 @@ function(my) {
 
     numFree : function() {
       return this.pool.length;
+    },
+
+    getMetrics : function() {
+      return {
+        free: this.numFree(),
+        allocated: this.numAllocated()
+      } 
     }
 
   });

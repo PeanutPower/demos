@@ -17,8 +17,7 @@ define([
 ) {
 
   var actorTypes = {
-    'Actor':Actor
-  , 'Ship':Ship
+    'Ship':Ship
   , 'Asteroid':Asteroid
   , 'Projectile':Projectile
   },
@@ -34,7 +33,7 @@ define([
     },
 
     createActor : function(config) {
-      var type = util.cap(config.actorType || 'actor');
+      var type = util.cap(config.actorType);
       
       if(!(type in actorTypes)) return null;
 

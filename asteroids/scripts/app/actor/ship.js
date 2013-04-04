@@ -4,7 +4,8 @@ define([
   'myclass',
   'app/actor/actor',
   'app/util/util',
-  'app/util/point'
+  'app/util/point',
+  'Sparks'
 ] , function(
   my,
   Actor,
@@ -113,6 +114,30 @@ define([
 
     reset : function() {
       this.attributes.shields = 100;
+    },
+
+    initEmitter : function() {
+
+      var group = new THREE.Object3D();
+      window.asteroids.get('asteroidsApp').mainScene.threeData.add(group);
+
+      var callback = function () {}
+
+      var counter = new SPARKS.SteadyCounter(200); 
+      this.emitter = new SPARKS.Emitter(counter);
+
+      var position = new THREE.Vector3( 0, 0, 0 );
+      this.emitter.addInitializer(new SPARKS.Position(new SPARKS.PointZone(position)));
+      this.emitter.addInitializer(new SPARKS.Lifetime(1,15));
+      var vector = new THREE.Vector3( -5, 0, 0 );
+      this.emitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( vector ) ) );
+
+      this.emitter.addAction(new SPARKS.Age(TWEEN.Easing.Linear.None));
+      this.emitter.addAction(new SPARKS.Accelerate(1,0,0));
+      this.emitter.addAction(new SPARKS.Move());
+      this.emitter.addAction(new SPARKS.RandomDrift(90,100,1000));
+
+      this.emitter.start();
     }
 
   });

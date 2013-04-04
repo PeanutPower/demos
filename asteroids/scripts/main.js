@@ -9,6 +9,8 @@ requirejs.config({
     handlebars : 'handlebars-1.0.0.beta.6',
     myclass : 'my.class',
     Box2D : 'Box2D.min',
+    Tween : 'Tween',
+    Sparks : 'Sparks',
     verold_api_v1 : 'http://assets.verold.com/verold_api/verold_api_v1_norequire',
     VeroldApp : '../vendor/VeroldApp',
     AsteroidsApp : '../vendor/AsteroidsApp'
@@ -25,6 +27,12 @@ requirejs.config({
     },
     Box2D : {
       exports : 'Box2D'
+    },
+    Tween : {
+      exports : 'Tween'
+    },
+    Sparks : {
+      exports : 'Sparks'
     },
     VeroldApp : {
       exports : 'VeroldApp'
@@ -46,10 +54,12 @@ if (!Date.now) {
 // load all dependencies here
 requirejs([
   'app/controller/game',
+  'verold_api_v1',
+  'Tween',
+  'Sparks',
   'jquery',
   'underscore',
   'handlebars',
-  'verold_api_v1',
   'VeroldApp',
   'AsteroidsApp'
 ],

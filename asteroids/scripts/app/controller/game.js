@@ -175,7 +175,7 @@ define([
     },
 
     addShip : function() {
-      this.stage.createActor({
+      var ship = this.stage.createActor({
         actorType: 'ship',
         position: new Box2D.Common.Math.b2Vec2(0,0),
         angle: 0,
@@ -183,6 +183,7 @@ define([
         model: this.asteroidsApp.getShipModel(),
         modelScale: 5
       });
+      ship.initEmitter();
     },
 
     collsionAsteroidProjectile : function(position) {

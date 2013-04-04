@@ -12,8 +12,8 @@ function(my,Explosion,ObjectPool) {
       saturation: 62.3/100,
       value: 67.84/100,
       valueRange: 20/100,
-      opacityDelta: 0.01,
-      opacityLowerBoundry: 0.7,
+      opacityDelta: 0.005,
+      opacityLowerBoundry: 0.5,
       frameDuration: 10
     },
 

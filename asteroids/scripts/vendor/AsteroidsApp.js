@@ -17,7 +17,7 @@ AsteroidsApp = function(veroldApp) {
   
 }
 
-AsteroidsApp.prototype.startup = function( gameCallback ) {
+AsteroidsApp.prototype.startup = function() {
 
   var that = this;
 
@@ -72,9 +72,9 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
       //Tell the engine to use this camera when rendering the scene.
       that.veroldApp.setActiveCamera( that.camera );
 
-      if(!!gameCallback) { gameCallback(); }
-
       window.asteroids.get('ui').hideLoadingProgress();
+
+      window.asteroids.get('events').trigger('game:veroldAppStartupComplete');
 
     },
 

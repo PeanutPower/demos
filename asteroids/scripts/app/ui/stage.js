@@ -2,9 +2,9 @@
 
 define([
   'myclass',
-  'app/util',
-  'app/point',
-  'app/canvaswrapper'
+  'app/util/util',
+  'app/util/point',
+  'app/ui/canvaswrapper'
 ], function(
   my,
   util,

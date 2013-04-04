@@ -15,7 +15,7 @@ function(my) {
     },
 
     set : function(name, obj) {
-      this.objects[name] = obj;
+      return this.objects[name] = obj;
     },
 
     get : function(name) {

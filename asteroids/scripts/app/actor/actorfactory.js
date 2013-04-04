@@ -2,11 +2,11 @@
 
 define([
   'myclass',
-  'app/util',
-  'app/actor',
-  'app/ship',
-  'app/asteroid',
-  'app/projectile'
+  'app/util/util',
+  'app/actor/actor',
+  'app/actor/ship',
+  'app/actor/asteroid',
+  'app/actor/projectile'
 ], function(
   my,
   util,

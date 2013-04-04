@@ -2,9 +2,9 @@
 
 define([
   'myclass',
-  'app/actor',
-  'app/util',
-  'app/point'
+  'app/actor/actor',
+  'app/util/util',
+  'app/util/point'
 ] , function(
   my,
   Actor,

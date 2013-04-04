@@ -2,7 +2,7 @@
 
 define([
     'myclass',
-    'app/util'
+    'app/util/util'
 ],function(
     my,
     util

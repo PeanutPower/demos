@@ -2,7 +2,7 @@
 
 define([
   'myclass',
-  'app/util'
+  'app/util/util'
 ] , function(
   my,
   util
@@ -186,6 +186,10 @@ define([
       this.attributes.model.traverse(function(obj) {
         obj.threeData.visible = bool;
       });
+    },
+
+    collision : function(collider) {
+      // override in children
     }
 
   });

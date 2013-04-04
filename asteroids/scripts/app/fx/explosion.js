@@ -124,6 +124,7 @@ define(function() {
     configureMaterial : function(material) {
       this.extend(material,{
         size: this.attributes.particleSize,
+        sizeAttenuation: true,
         transparent: true,
         opacity: this.attributes.opacity,
         vertexColors: true,

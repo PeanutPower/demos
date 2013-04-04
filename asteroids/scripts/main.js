@@ -10,7 +10,7 @@ requirejs.config({
     myclass : 'my.class',
     Box2D : 'Box2D.min',
     Tween : 'Tween',
-    Sparks : 'Sparks',
+    Stats : 'Stats',
     verold_api_v1 : 'http://assets.verold.com/verold_api/verold_api_v1_norequire',
     VeroldApp : '../vendor/VeroldApp',
     AsteroidsApp : '../vendor/AsteroidsApp'
@@ -31,8 +31,8 @@ requirejs.config({
     Tween : {
       exports : 'Tween'
     },
-    Sparks : {
-      exports : 'Sparks'
+    Stats : {
+      exports : 'Stats'
     },
     VeroldApp : {
       exports : 'VeroldApp'
@@ -56,7 +56,6 @@ requirejs([
   'app/controller/game',
   'verold_api_v1',
   'Tween',
-  'Sparks',
   'jquery',
   'underscore',
   'handlebars',

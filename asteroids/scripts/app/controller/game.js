@@ -183,7 +183,6 @@ define([
         model: this.asteroidsApp.getShipModel(),
         modelScale: 5
       });
-      ship.initEmitter();
     },
 
     collsionAsteroidProjectile : function(position) {

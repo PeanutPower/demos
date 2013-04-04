@@ -4,7 +4,8 @@ define([
   'myclass',
   'app/util/util',
   'app/util/point',
-  'app/ui/canvaswrapper'
+  'app/ui/canvaswrapper',
+  'Stats'
 ], function(
   my,
   util,
@@ -48,7 +49,7 @@ define([
 
         // speed for logic loop which runs 
         // independently of animation loop
-        gamespeed = Math.round(1000/50),
+        gamespeed = Math.round(1000/70),
 
         // info obj for output
         consoleData = {infoItems:[]},
@@ -85,6 +86,12 @@ define([
 
         physics = window.asteroids.get('physics');
 
+        this.stats = new Stats();
+        this.stats.domElement.style.position = 'absolute';
+        this.stats.domElement.style.left = '0px';
+        this.stats.domElement.style.bottom = '0px';
+
+        document.body.appendChild(this.stats.domElement);
       },
 
       initAnim : function() {
@@ -124,6 +131,7 @@ define([
       },
 
       update : function(updTime) {
+        this.stats.begin();
         this.updateActors(updTime);
         var world = physics.getWorld(),
             frameRate = 1/60;
@@ -135,13 +143,14 @@ define([
           3  // position iterations
         );
 
-        world.DrawDebugData();
+        // world.DrawDebugData();
         world.ClearForces();
 
         // perform any actions on waiting actors
-        this.purgeDeadActors();
+        // this.purgeDeadActors();
 
-        this.updateInfoPanel();
+        // this.updateInfoPanel();
+        this.stats.end();
       },
 
       render : function(time) {

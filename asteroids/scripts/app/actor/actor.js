@@ -9,6 +9,8 @@ define([
 ) {
 
   Actor = my.Class({
+    
+    collisionEvents : {},
 
     constructor : function(config) {
       if(!(this instanceof Actor)) {
@@ -189,7 +191,14 @@ define([
     },
 
     collision : function(collider) {
-      // override in children
+      var at = collider.attributes.actorType,
+          ce = this.collisionEvents;
+
+      if(!(at in ce)) return;
+
+      setTimeout($.proxy(function() {
+        this[ce[at]](collider);
+      },this),0);
     }
 
   });

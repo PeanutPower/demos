@@ -123,9 +123,6 @@ define([
               
               a.collision(b);
               b.collision(a);
-          // if(a.attributes.actorType === 'ship' || b.attributes.actorType === 'ship') {
-          //   window.asteroids.get('events').trigger('collision:ship');
-          // }
 
           // if((a.attributes.actorType === 'projectile' && b.attributes.actorType === 'asteroid') ||
           //   (a.attributes.actorType === 'asteroid' && b.attributes.actorType === 'projectile')) {
@@ -138,12 +135,6 @@ define([
           //     explosionPool.free(exp);
           //   });
 
-
-          //   setTimeout(function() {
-          //     // _.each([a,b], function(obj) { obj.setActive(false); });
-          //     a.setActive(false);
-          //     b.setActive(false);
-          //   }, 0);
           // }
         }
       });

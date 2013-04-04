@@ -14,6 +14,10 @@ define([
 
   Ship = my.Class(Actor,{
 
+    collisionEvents : {
+      'asteroid' : 'depleteShields'
+    },
+
     constructor : function(config) {
       if(!(this instanceof Ship)) {
         return new Ship(config);
@@ -34,10 +38,6 @@ define([
 
       Ship.Super.call(this,this.attributes);
 
-      window.asteroids.get('events').on('collision:ship',function(e) {
-        this.depleteShields();
-      },this);
-  
     },
 
     update : function() {
@@ -69,12 +69,6 @@ define([
 
       // console.info(this.attributes.modelPosition);
 
-    },
-
-    adjustDirection : function(angle,step) {
-      var d = angle + step;
-      if(Math.abs(d) > Math.PI) { d = -(d - (d % Math.PI)); }
-      return d;
     },
 
     propelProjectile : _.throttle(function() {

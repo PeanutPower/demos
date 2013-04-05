@@ -146,7 +146,7 @@ define([
           },
           angularVelocity = 15;
 
-      this.asteroidsApp.createAsteroidModel(function(model) {
+      this.asteroidsApp.cloneFromTemplate('asteroid',function(model) {
         that.stage.createActor({
           actorType: 'asteroid',
           position: position,
@@ -162,7 +162,7 @@ define([
 
     addProjectile : function() {
       var that = this;
-      this.asteroidsApp.createProjectileModel(function(model) {
+      this.asteroidsApp.cloneFromTemplate('projectile',function(model) {
         that.stage.createActor({
           actorType: 'projectile',
           position: new Box2D.Common.Math.b2Vec2(0,0),
@@ -175,13 +175,16 @@ define([
     },
 
     addShip : function() {
-      var ship = this.stage.createActor({
-        actorType: 'ship',
-        position: new Box2D.Common.Math.b2Vec2(0,0),
-        angle: 0,
-        radius: 5,
-        model: this.asteroidsApp.getShipModel(),
-        modelScale: 5
+      var that = this;
+      this.asteroidsApp.cloneFromTemplate('ship',function(model) {
+        that.stage.createActor({
+          actorType: 'ship',
+          position: new Box2D.Common.Math.b2Vec2(0,0),
+          angle: 0,
+          radius: 5,
+          model: model,
+          modelScale: 5
+        });
       });
     },
 

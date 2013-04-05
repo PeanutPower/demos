@@ -17,8 +17,7 @@ define([
         return new Actor(config);
       }
 
-      this.attributes = {},
-      this.attributes = _.extend(this.attributes,config);
+      this.attributes = _.extend({},config);
       this.initialize();
     },
 
@@ -66,7 +65,7 @@ define([
       }
 
       if(!!this.attributes.model) {
-        this.setModel(this.attributes.model);
+        this.initModel();
       }
 
       if(!!this.attributes.modelScale && this.hasModel()) {
@@ -199,6 +198,10 @@ define([
       setTimeout($.proxy(function() {
         this[ce[at]](collider);
       },this),0);
+    },
+
+    initModel : function() {
+      // override in inheriting objects    
     }
 
   });

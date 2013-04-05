@@ -27,17 +27,14 @@ function(my,Explosion,ObjectPool) {
     },
 
     initialize : function() {
-      var astApp = window.asteroids.get('asteroidsApp'),
-          fn;
+      var astApp = window.asteroids.get('asteroidsApp');
 
       this.template.coordsConversion = astApp.getPhysicsTo3DSpaceConverson();
       this.template.mainScene = astApp.mainScene;
 
-      fn = $.proxy(function() {
+      _.times(5,function() {
         this.pool.alloc(this.template);
       },this);
-
-      _.times(5,fn);
 
       this.pool.freeAll();
     },

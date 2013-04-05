@@ -24,6 +24,21 @@ define([
       this.attributes = _.extend({},config);
 
       Asteroid.Super.call(this,this.attributes);
+
+    },
+
+    initModel : function() {
+
+      var angles = [];
+      _.times(3,function() { angles.push(Math.random()*(2*Math.PI)); });
+
+      this.attributes.model.traverse(function(obj) {
+        if(obj.entityModel.get('name').match(/^default.*/) && obj.type === "mesh") {
+          var vec3 = new THREE.Vector3(angles[0],angles[1],angles[2])
+          obj.threeData.quaternion.setFromEuler(vec3);
+        }
+      });
+
     },
 
     projectileCollision : function(collider) {

@@ -113,19 +113,6 @@ define([
         time = time_arg;
       },
 
-      getBounds : function() {
-        var b = $('body'),
-            bounds = {
-              x1 : 0,
-              y1 : 0,
-              x2 : b.outerWidth(false),
-              y2 : b.outerHeight(false)
-            };
-
-        // console.info(bounds);
-        return bounds;
-      },
-
       getKeys : function() {
         return keys;
       },
@@ -153,25 +140,11 @@ define([
         this.stats.end();
       },
 
-      render : function(time) {
-        this.setTime(time);
-        this.renderActors();
-      },
-
       updateActors : function(updTime) {
         var i = actors.length;
         while(i--) {
           if(!!actors[i] && actors[i].isActive()) {
             actors[i].update(updTime);
-          }
-        }
-      },
-
-      renderActors : function() {
-        var i = actors.length;
-        while(i--) {
-          if(!!actors[i]) {
-            actors[i].render();
           }
         }
       },
@@ -186,6 +159,7 @@ define([
         while(i--) {
           if(actors[i] === actor) {
             actors.splice(i,1); 
+            break;
           }
         }
         
@@ -197,15 +171,6 @@ define([
 
       getFps : function() {
         return util.round(1000/(Date.now()-this.getTime()),0);
-      },
-
-      getCenterPoint : function() {
-        var bounds = this.getBounds(),
-            x = bounds.x2/2,
-            y = bounds.y2/2,
-            point = new Point(x,y);
-
-        return point;
       },
 
       createActor : function(config) {
@@ -234,6 +199,7 @@ define([
       },
 
       purgeDeadActors : function() {
+        if(!actorsPendingRemoval.length) return;
         var i = 0, l = actorsPendingRemoval.length;
         if(!l) return;
         for(i=0;i<l;i+=1) {

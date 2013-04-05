@@ -79,10 +79,6 @@ define([
             }
         },
 
-        getBounds : function() {
-            return bounds;
-        },
-
         getSize : function() {
             size.width = bounds.x2;
             size.height = bounds.y2;

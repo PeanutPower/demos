@@ -23,6 +23,9 @@ define(function() {
 
     buildComponents : function() {
 
+      this.asteroidsApp = window.asteroids.get('asteroidsApp');
+      this.veroldApp = window.asteroids.get('veroldApp');
+
       // geometry
       this.geometry = new THREE.Geometry();
 
@@ -55,6 +58,7 @@ define(function() {
       this.configureMaterial(this.material);
 
       this.particleSystem = new THREE.ParticleSystem(this.geometry,this.material);
+
     },
 
     initialize : function(config) {
@@ -83,8 +87,7 @@ define(function() {
       // particle settings
       this.attributes.particleSize = 0.1;
       this.attributes.numOfParticles = 1000;
-      this.attributes.animationDuration = 10000; // milliseconds
-      this.attributes.frameDuration = 24; // milliseconds
+      this.attributes.animationDuration = 5; // seconds
       this.attributes.coordsConversion = 1;
 
       if(!!config) {
@@ -151,24 +154,19 @@ define(function() {
       }
 
       this.attributes.mainScene.threeData.add(this.particleSystem);
+      this.onAnimationEnd = callback;
 
-      var animation = this.initTimingLoop(this.attributes.frameDuration,this.animate,this);
-      var interval = setInterval(animation,0);
-      
-      setTimeout($.proxy(function() {
-        !!callback && callback();
-        clearInterval(interval);
-        this.attributes.mainScene.threeData.remove(this.particleSystem);
-      },this),this.attributes.animationDuration);
-
+      // binding handler to this instance
+      this.animationUpdateHandler = _.bind(this.animate,this);
+      this.veroldApp.on('update',this.animationUpdateHandler);
     },
 
-    animate : function(time,delta) {
+    animate : function(delta) {
 
       var i = 0,
           l = this.geometry.vertices.length,
           point,
-          elTime = this.elapsedTime * 0.008;
+          elTime = this.elapsedTime * 6;
 
       for(i=0;i<l;i+=1) {
         this.vector.mag = this.velocityVectors[i].mag * elTime;
@@ -185,6 +183,17 @@ define(function() {
       this.geometry.verticesNeedUpdate = true;
       this.elapsedTime += delta;
 
+      if(this.elapsedTime >= this.attributes.animationDuration) {
+        this.animationEnd();
+      }
+
+    },
+
+    animationEnd : function() {
+      console.info('explosion animation end');
+      this.veroldApp.off('update',this.animationUpdateHandler);
+      if(!!this.onAnimationEnd) { this.onAnimationEnd(); }
+      this.attributes.mainScene.threeData.remove(this.particleSystem);
     },
 
     generateVectorComponent : function(radius) {

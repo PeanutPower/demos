@@ -13,8 +13,7 @@ function(my,Explosion,ObjectPool) {
       value: 67.84/100,
       valueRange: 20/100,
       opacityDelta: 0.005,
-      opacityLowerBoundry: 0.5,
-      frameDuration: 10
+      opacityLowerBoundry: 0.5
     },
 
     constructor : function() {

@@ -32,9 +32,6 @@ define([
             k32:'space'
         },
 
-        // stores 
-        time = 0,
-
         // Box2D physics object
         physics,
 
@@ -49,7 +46,7 @@ define([
 
         // speed for logic loop which runs 
         // independently of animation loop
-        gamespeed = Math.round(1000/70),
+        frameRate = 1/65,
 
         // info obj for output
         consoleData = {infoItems:[]},
@@ -60,9 +57,7 @@ define([
         // DOM node for information output
         infoPanel = $('#info-panel'),
 
-        renderInterval = null,
-
-        gameLoopInterval = null;
+        veroldApp;
 
     // set up key event listeners
     $(document).keydown(function(e) {
@@ -94,23 +89,23 @@ define([
         document.body.appendChild(this.stats.domElement);
       },
 
-      getTime : function() {
-        return time;
+      startAnimation : function() {
+        veroldApp = (!veroldApp) ? window.asteroids.get('veroldApp') : veroldApp;
+        veroldApp.on('update',this.update,this);
       },
 
-      setTime : function (time_arg) {
-        time = time_arg;
+      endAnimation : function() {
+        veroldApp.off('update',this.update,this);
       },
 
       getKeys : function() {
         return keys;
       },
 
-      update : function(updTime) {
+      update : function(delta) {
         this.stats.begin();
-        this.updateActors(updTime);
-        var world = physics.getWorld(),
-            frameRate = 1/60;
+        this.updateActors(delta);
+        var world = physics.getWorld();
 
         // run physics simulation
         world.Step(
@@ -129,11 +124,11 @@ define([
         this.stats.end();
       },
 
-      updateActors : function(updTime) {
+      updateActors : function(delta) {
         var i = actors.length;
         while(i--) {
           if(!!actors[i] && actors[i].isActive()) {
-            actors[i].update(updTime);
+            actors[i].update(delta);
           }
         }
       },
@@ -158,29 +153,11 @@ define([
         return actors.length;
       },
 
-      getFps : function() {
-        return util.round(1000/(Date.now()-this.getTime()),0);
-      },
-
       createActor : function(config) {
         var actorFactory = window.asteroids.get('actorfactory'),
             actor = actorFactory.createActor(config);
         this.addActor(actor);
         return actor;
-      },
-
-      updateInfoPanel : function() {
-        consoleData.infoItems = [];
-        var numOfActors = actors.length;
-        var activeActors = _.filter(actors,function(actor){
-          return actor.isActive();
-        }).length;
-        var ship = actors[0];
-        
-        consoleData.infoItems.push({label:'Actors on Stage',value:numOfActors});
-        consoleData.infoItems.push({label:'Active Actors',value:activeActors});
-        // consoleData.infoItems.push({label:'fps',value:this.getFps()});
-        infoPanel.html(infoPanelTemplate(consoleData));
       },
 
       scheduleActorForRemoval : function(actor) {
@@ -206,7 +183,22 @@ define([
         return _(actorTypes[type]).chain().filter(function(actor) {
           return !actor.isActive();
         }).sort().first().value();
+      },
+
+      updateInfoPanel : function() {
+        consoleData.infoItems = [];
+        var numOfActors = actors.length;
+        var activeActors = _.filter(actors,function(actor){
+          return actor.isActive();
+        }).length;
+        var ship = actors[0];
+        
+        consoleData.infoItems.push({label:'Actors on Stage',value:numOfActors});
+        consoleData.infoItems.push({label:'Active Actors',value:activeActors});
+        // consoleData.infoItems.push({label:'fps',value:this.getFps()});
+        infoPanel.html(infoPanelTemplate(consoleData));
       }
+
     };
 
   }()));

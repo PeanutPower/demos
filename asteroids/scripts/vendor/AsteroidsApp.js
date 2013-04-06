@@ -38,7 +38,7 @@ AsteroidsApp.prototype.startup = function() {
       // that.veroldApp.on("keyDown", that.onKeyPress, that);
       // that.veroldApp.on("mouseUp", that.onMouseUp, that);
       // that.veroldApp.on("fixedUpdate", that.fixedUpdate, that );
-      // that.veroldApp.on("update", that.update, that );
+      that.veroldApp.on("update", that.update, that );
 
       //Store a pointer to the scene
       that.mainScene = scene;

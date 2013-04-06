@@ -95,7 +95,6 @@ define([
       // adding projectiles
       _.times(4,function() { that.addProjectile(); });
 
-      this.stage.initAnim();
     },
 
     setContactListeners : function() {
@@ -118,6 +117,11 @@ define([
       VAPI.onReady(function(){
 
         that.veroldApp = window.asteroids.set('veroldApp',new VeroldApp);
+
+        // this is where the stage animation loop gets hooked up
+        var stage = window.asteroids.get('stage');
+        AsteroidsApp.prototype.update = _.bind(stage.update,stage);
+
         that.asteroidsApp = window.asteroids.set('asteroidsApp',new AsteroidsApp(that.veroldApp));
 
         that.veroldApp.initialize({

@@ -94,17 +94,6 @@ define([
         document.body.appendChild(this.stats.domElement);
       },
 
-      initAnim : function() {
-
-        var gameLoop = util.initTimingLoop(gamespeed,this.update,this);
-        gameLoopInterval = setInterval(gameLoop,0);
-
-      },
-
-      stopAnim : function() {
-        clearInterval(gameLoopInterval);
-      },
-
       getTime : function() {
         return time;
       },

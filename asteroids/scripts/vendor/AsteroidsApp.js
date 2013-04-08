@@ -6,13 +6,19 @@ AsteroidsApp = function(veroldApp) {
 
   this.ship;
 
-  this.modelTemplateIDs = {
+  this.modelIDs = {
     'asteroid' : '514d18e34ad09902000005a9',
     'projectile' : '51421b770b4e5d0200000376',
     'ship': '514219f50b4e5d0200000353'
   };
 
   this.modelTemplates = {};
+
+  this.assetIDs = {
+    'asteroidMaterial': '51421a6f1c3aa5cc1e001b62'
+  };
+
+  this.assetTemplates = {};
 
   this.conversionScale = 3.55;
 
@@ -48,9 +54,10 @@ AsteroidsApp.prototype.startup = function() {
       
       // var models = that.mainScene.getAllObjects( { "filter" :{ "model" : true }});
 
-      that.getModelTemplateByName('ship');
-      that.getModelTemplateByName('asteroid');
-      that.getModelTemplateByName('projectile');
+      that.getObjectTemplateByName('ship');
+      that.getObjectTemplateByName('asteroid');
+      // that.getAssetTemplateByName('asteroidMaterial');
+      that.getObjectTemplateByName('projectile');
 
       // that.ship = models[ _.keys( models )[0] ];
       // var model = that.ship.threeData;
@@ -169,9 +176,9 @@ AsteroidsApp.prototype.getPhysicsTo3DSpaceConverson = function() {
   return this.conversionScale;
 };
 
-AsteroidsApp.prototype.cloneFromTemplate = function(name,callback) {
+AsteroidsApp.prototype.cloneObjectFromTemplate = function(name,callback) {
   var that = this;
-  var template = this.getModelTemplateByName(name);
+  var template = this.getObjectTemplateByName(name);
   template.clone({
     success_hierarchy: function(clone) {
       that.mainScene.addChildObject(clone);
@@ -180,12 +187,12 @@ AsteroidsApp.prototype.cloneFromTemplate = function(name,callback) {
   })
 };
 
-AsteroidsApp.prototype.getModelTemplateByName = function(name) {
+AsteroidsApp.prototype.getObjectTemplateByName = function(name) {
 
   // if template already retrieved, return it
   if(name in this.modelTemplates) return this.modelTemplates[name];
 
-  var templateID = this.modelTemplateIDs[name],
+  var templateID = this.modelIDs[name],
       template = this.mainScene.getObject(templateID);
 
   this.mainScene.removeChildObject(template);
@@ -193,4 +200,25 @@ AsteroidsApp.prototype.getModelTemplateByName = function(name) {
   this.modelTemplates[name] = template;
 
   return template;
-}
+};
+
+AsteroidsApp.prototype.cloneAssetFromTemplate = function(name, callback) {
+  var that = this;
+  var template = this.getAssetTemplateByName(name);
+  template.clone({
+    success_hierarchy: function(clone) {
+      callback(clone);
+    }
+  })
+};
+
+AsteroidsApp.prototype.getAssetTemplateByName = function(name) {
+  if(name in this.assetTemplates) return this.assetTemplates[name];
+  var assetReg = this.veroldApp.getAssetRegistry();
+  var templateID = this.assetIDs[name];
+  var template = assetReg.getAsset(templateID);
+
+  this.assetTemplates[name] = template;
+
+  return template;
+};

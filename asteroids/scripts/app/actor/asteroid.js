@@ -25,17 +25,35 @@ define([
 
       Asteroid.Super.call(this,this.attributes);
 
+      this.materials = [];
+
+      // this.initMaterials();
+    },
+
+    initMaterials : function() {
+      _.times(5,$.proxy(function(){
+        var mat = this.asteroidsApp.cloneAssetFromTemplate('asteroidMaterial');
+        this.materials.push(mat);
+      },this)); 
+      console.info(this.materials);
     },
 
     initModel : function() {
 
-      var angles = [];
+      var angles = [],
+          that = this;
       _.times(3,function() { angles.push(Math.random()*(2*Math.PI)); });
 
       this.attributes.model.traverse(function(obj) {
         if(obj.entityModel.get('name').match(/^default.*/) && obj.type === "mesh") {
           var vec3 = new THREE.Vector3(angles[0],angles[1],angles[2])
           obj.threeData.quaternion.setFromEuler(vec3);
+          // assigning a random material from list to each asteroid
+          if(this.materials.length) {
+            obj.set({
+              'payload.material' : that.materials[Math.floor(Math.random()*that.materials.length)]
+            });
+          }
         }
       });
 

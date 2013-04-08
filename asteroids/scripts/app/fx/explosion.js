@@ -86,7 +86,7 @@ define(function() {
       
       // particle settings
       this.attributes.particleSize = 0.1;
-      this.attributes.numOfParticles = 1000;
+      this.attributes.numOfParticles = 500;
       this.attributes.animationDuration = 5; // seconds
       this.attributes.coordsConversion = 1;
 

@@ -1,18 +1,15 @@
 GangnamApp = function( veroldApp ) {
+
   this.veroldApp = veroldApp;  
   this.mainScene;
   this.limitedFOVCamera;
   this.camera;
-
   this.shotgun;
 
+  //scoreboard
   this.headshots = 0;
   this.youdeads = 10;
-
   this.bGameOver = false;
-
-
-
 }
 
 GangnamApp.prototype.startup = function( ) {
@@ -53,6 +50,9 @@ GangnamApp.prototype.startup = function( ) {
       that.camera = that.limitedFOVCamera.threeCamera;
       that.veroldApp.setActiveCamera( that.camera );
 
+      this.headshots = 0;
+      this.youdeads = 10;
+
     },
 
     progress: function(sceneObj) {
@@ -76,6 +76,7 @@ GangnamApp.prototype.update = function( delta ) {
   if (this.bGameOver) { return; }
 
   // update the scoreboard
+  document.getElementById("scoreboard").style.display = "block"
   $("#scoreboard #headshots").text(this.headshots); 
   $("#scoreboard #youdeads").text(this.youdeads); 
 

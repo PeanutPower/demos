@@ -25,7 +25,6 @@ build a game or website for a client or business, contact us at info@verold.com 
 * [Bullrun](http://api.verold.com/demos/bullrun)
 * [CannonJS](http://api.verold.com/demos/cannonjs)
 * [Tyga Rack City](http://api.verold.com/demos/car-demo)
-* [Carnegie Hall of Architecture](http://api.verold.com/demos/carnegie)
 * [Dungeon Crawler](http://api.verold.com/demos/dungeon)
 * [Stirling Inch Gangnam](http://api.verold.com/demos/stirling-inch-gangnam)
 * [Tanks](http://api.verold.com/demos/tanks)

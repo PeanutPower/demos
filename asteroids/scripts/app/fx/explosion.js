@@ -47,7 +47,7 @@ define(function() {
         this.geometry.vertices.push(vertex);
 
         this.colors[i] = new THREE.Color();
-        this.setHSV(this.colors[i]);
+        this.setHSL(this.colors[i]);
 
         this.velocityVectors.push(this.generateVelocityVector());
       }
@@ -102,7 +102,7 @@ define(function() {
           l = this.geometry.vertices.length,
           vert;
       for(i=0;i<l;i+=1) {
-        this.setHSV(this.colors[i]);
+        this.setHSL(this.colors[i]);
       }
 
       this.elapsedTime = 0;
@@ -136,11 +136,11 @@ define(function() {
       });
     },
 
-    setHSV : function(color) {
+    setHSL : function(color) {
         var valDiff = this.attributes.value - this.attributes.valueRange,
             value = this.attributes.value + (Math.random() * valDiff) - (Math.random() * valDiff);
 
-        color.setHSV(this.attributes.hue,this.attributes.saturation,value);
+        color.setHSL(this.attributes.hue,this.attributes.saturation,value);
     },
 
     explode : function(callback) {

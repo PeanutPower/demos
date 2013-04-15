@@ -9,9 +9,9 @@ function(my,Explosion,ObjectPool) {
 
     template : {
       hue: 38/360,
-      saturation: 62.3/100,
-      value: 67.84/100,
-      valueRange: 20/100,
+      saturation: 50/100,
+      value: 45/100,
+      valueRange: 10/100,
       opacityDelta: 0.005,
       opacityLowerBoundry: 0.5
     },

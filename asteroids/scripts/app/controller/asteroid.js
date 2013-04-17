@@ -12,54 +12,69 @@ define([
   util
 ) {
 
-  var astApp = window.asteroids.get('asteroidsApp'),
-      coordsConvert = astApp.getPhysicsTo3DSpaceConverson(),
-      events = window.asteroids.get('events'),
-      scale = astApp.get('physics').getScale(),
-      orthBnds = astApp.getOrthBounds(),
-      angularVelocity = 15;
-
   var AsteroidController = my.Class({
-
-    pool : new ObjectPool(Asteroid),
-
-    template : {
-      actorType: 'asteroid',
-      angle: util.randRange(0,360),
-      initialForce: util.randRange(10,20),
-      angularVelocity: util.randRange(-angularVelocity,angularVelocity),
-      radius: 4,
-      modelScale: 5
-    },
 
     constructor : function() {
       if(!(this instanceof AsteroidController)) {
         return new AsteroidController();
       }
 
+      this.pool = new ObjectPool(Asteroid);
       this.initialize();
     },
 
     initialize : function() {
+      this.astApp = window.asteroids.get('asteroidsApp'),
+      this.coordsConvert = this.astApp.getPhysicsTo3DSpaceConverson(),
+      this.scale = window.asteroids.get('physics').getScale(),
+      this.orthBnds = this.astApp.getOrthBounds(),
+      this.angularVelocity = 15;
 
-      _.times(15, $.proxy(function() {
+      this.template = {
+        actorType: 'asteroid',
+        radius: 4,
+        modelScale: 5,
+        active: false
+      };
+
+      _.times(1, $.proxy(function() {
+        this.randomizeTemplate();
         this.template.position = this.newPosition();
         this.pool.alloc(this.template);
       },this));
 
       this.pool.freeAll();
+
     },
 
-    sendInAsteroid : function() {
-    
-      
+    sendInAsteroid : function(config) {
+      config = config || {};
+      var template = _.extend(this.template,config),
+          asteroid;
+
+      this.randomizeTemplate();
+      this.template.position = this.newPosition();
+      this.template.active = true;
+      asteroid = this.pool.alloc(template);
+
+      asteroid.onInactive($.proxy(function(){
+        this.pool.free(asteroid);
+      },this));
     },
 
     newPosition : function() {
       return {
-        x: util.randRange(orthBnds.left,orthBnds.right)*scale*coordsConvert,
-        y: util.randRange(orthBnds.top,orthBnds.bottom)*scale*coordsConvert
+        x: util.randRange(this.orthBnds.left,this.orthBnds.right)*this.scale*this.coordsConvert,
+        y: util.randRange(this.orthBnds.top,this.orthBnds.bottom)*this.scale*this.coordsConvert
       };
+    },
+
+    randomizeTemplate : function() {
+      _.extend(this.template, {
+        angle: util.randRange(0,360),
+        initialForce: util.randRange(10,20),
+        angularVelocity: util.randRange(-this.angularVelocity,this.angularVelocity)
+      });
     }
   });
 

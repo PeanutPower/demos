@@ -40,7 +40,7 @@ define([
         var mat = this.asteroidsApp.cloneAssetFromTemplate('asteroidMaterial');
         this.materials.push(mat);
       },this)); 
-      console.info(this.materials);
+      // console.info(this.materials);
     },
 
     initModel : function() {

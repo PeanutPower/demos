@@ -5,13 +5,13 @@ function(my) {
 
   var ObjectPool = my.Class({
 
-    allocated : [],
-    pool : [],
-
     constructor : function(objConstructor) {
       if(!(this instanceof ObjectPool)) {
         return new ObjectPool(objConstructor);
       }
+
+      this.allocated = [];
+      this.pool = [];
 
       this.objConstructor = objConstructor;
 

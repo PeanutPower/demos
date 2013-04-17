@@ -8,12 +8,6 @@ define([
   util
 ) {
 
-  var aSlice = Array.prototype.slice,
-      oToString = Object.prototype.toString,
-      oType = function(o) {
-        return oToString.call(o,0).slice(8,-1).toLowerCase();
-      };
-
   Actor = my.Class({
     
     collisionEvents : {},
@@ -26,8 +20,8 @@ define([
 
     buildComponents : function() {
 
-      this.attributes.physics = window.asteroids.get('physics');
-      this.scale = this.attributes.physics.getScale();
+      this.physics = window.asteroids.get('physics');
+      this.scale = this.physics.getScale();
       this.stage = window.asteroids.get('stage');
       this.asteroidsApp = window.asteroids.get('asteroidsApp');
       this.coordinatesConversion = this.asteroidsApp.getPhysicsTo3DSpaceConverson();
@@ -44,7 +38,7 @@ define([
         active: this.attributes.active
       };
 
-      var physElements = this.attributes.physics.createBody(bodyConfig);
+      var physElements = this.physics.createBody(bodyConfig);
 
       this.body = physElements.body;
       this.fixture = physElements.fixture;
@@ -58,13 +52,12 @@ define([
       this.attributes = _.extend({},config);
 
       var firstAlloc = util.isFirstAlloc(arguments);
+      if(firstAlloc) { this.buildComponents(); }
 
       if(!(typeof this.attributes.active !== 'undefined' && this.attributes.active !== null)) {
         this.attributes.active = true;
       }
       this.setActive(this.attributes.active);
-
-      if(firstAlloc) { this.buildComponents(); }
 
       if(!!this.attributes.initialForce) {
         this.setLinearVelocityFromForce(this.attributes.initialForce);
@@ -77,6 +70,8 @@ define([
       if(this.hasModel()) {
         this.initModel();
         this.attributes.model.threeData.scale.multiplyScalar(this.attributes.modelScale || 0);
+        this.attributes.model.threeData.position.x = 10000;
+        this.attributes.model.threeData.position.y = 10000;
       }
 
     },
@@ -108,17 +103,9 @@ define([
       this.attributes.model = model;
     },
 
-    setStates : function(states) {
-      this.attributes.states = states;
-    },
-
-    getStates : function() {
-      return this.attributes.states;
-    },
-
     destroy : function() {
       this.body.DestroyFixture(this.fixture);
-      this.attributes.physics.getWorld().DestroyBody(this.body);
+      this.physics.getWorld().DestroyBody(this.body);
       this.stage.removeActor(this);
       if(!!this.attributes.model) {
         // TODO: this is not a true destroy. Ask Mike about how this is done again.
@@ -128,12 +115,17 @@ define([
 
     setActive : function(active) {
 
-      var delay = (active) ? 20 : 0;
       this.attributes.active = active;
+      this.addToStage(this.attributes.active);
       if(!!this.body) {
         this.body.SetActive(this.attributes.active);
       }
 
+      if(!this.attributes.active && !!this.onInactiveCallback) {
+        this.onInactiveCallback();
+      }
+
+      var delay = (active) ? 20 : 0;
       setTimeout($.proxy(function() {
         this.visible(this.attributes.active);
       },this), delay);
@@ -142,6 +134,17 @@ define([
 
     isActive : function() {
       return this.attributes.active;
+    },
+
+    addToStage : function(active) {
+      if(active)
+        this.stage.addActor(this);
+      else
+        this.stage.removeActor(this);
+    },
+
+    onInactive : function(callback) {
+      this.onInactiveCallback = callback;
     },
 
     correctPosition : function() {
@@ -157,7 +160,7 @@ define([
     setPosition3DCoords : function(x,y) {
       var nx = x * this.coordinatesConversion,
           ny = y * this.coordinatesConversion;
-      this.body.SetPosition(this.attributes.physics.b2Vec2(nx,ny));
+      this.body.SetPosition(this.physics.b2Vec2(nx,ny));
     },
 
     setPosition : function(position) {
@@ -165,7 +168,7 @@ define([
     },
 
     setLinearVelocityFromForce : function(force) {
-      var localVector = this.attributes.physics.b2Vec2(force,0),
+      var localVector = this.physics.b2Vec2(force,0),
           worldVector = this.body.GetWorldVector(localVector);
       this.body.SetLinearVelocity(worldVector,this.body.GetWorldCenter());
     },

@@ -10,6 +10,7 @@ define([
   'app/util/physics',
   'app/util/registry',
   'app/controller/explosion',
+  'app/controller/asteroid',
   'Box2D'
 ] , function(
   my,
@@ -20,7 +21,8 @@ define([
   CustomEvents,
   Physics,
   Registry,
-  ExplosionController
+  ExplosionController,
+  AsteroidController
 ) {
 
   var GameController = my.Class({
@@ -87,10 +89,20 @@ define([
 
       this.explosionController = new ExplosionController();
 
-      // this.addShip();
+      this.asteroidController = new AsteroidController();
 
-      // adding asteroids
-      _.times(15,function() { that.addAsteroid(); });
+      var max = 5;
+      var count = 0;
+      var interval = setInterval($.proxy(function() {
+        count++;
+        if(count > max) {
+          clearInterval(interval);
+          return;
+        }
+        this.asteroidController.sendInAsteroid();
+      },this),5000);
+
+      // this.addShip();
 
       // adding projectiles
       // _.times(4,function() { that.addProjectile(); });
@@ -133,28 +145,6 @@ define([
           }
         });
 
-      });
-    },
-
-    addAsteroid : function() {
-      var that = this,
-          scale = this.physics.getScale(),
-          orthBnds = this.asteroidsApp.getOrthBounds(),
-          coordsConversion = this.asteroidsApp.getPhysicsTo3DSpaceConverson(),
-          position = {
-            x: util.randRange(orthBnds.left,orthBnds.right)*scale*coordsConversion,
-            y: util.randRange(orthBnds.top,orthBnds.bottom)*scale*coordsConversion
-          },
-          angularVelocity = 15;
-
-      that.stage.createActor({
-        actorType: 'asteroid',
-        position: position,
-        angle: util.randRange(0,360),
-        initialForce: util.randRange(10,20),
-        angularVelocity: util.randRange(-angularVelocity,angularVelocity),
-        radius: 4,
-        modelScale: 5
       });
     },
 

@@ -32,7 +32,6 @@ function(my) {
 
       instance.initialize.apply(instance,args);
 
-
       return instance;
       
     },

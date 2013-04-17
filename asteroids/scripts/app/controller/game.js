@@ -87,13 +87,13 @@ define([
 
       this.explosionController = new ExplosionController();
 
-      this.addShip();
+      // this.addShip();
 
       // adding asteroids
       _.times(15,function() { that.addAsteroid(); });
 
       // adding projectiles
-      _.times(4,function() { that.addProjectile(); });
+      // _.times(4,function() { that.addProjectile(); });
 
       this.stage.startAnimation();
 
@@ -147,17 +147,14 @@ define([
           },
           angularVelocity = 15;
 
-      this.asteroidsApp.cloneObjectFromTemplate('asteroid',function(model) {
-        that.stage.createActor({
-          actorType: 'asteroid',
-          position: position,
-          angle: util.randRange(0,360),
-          initialForce: util.randRange(10,20),
-          angularVelocity: util.randRange(-angularVelocity,angularVelocity),
-          radius: 4,
-          model: model,
-          modelScale: 5
-        });
+      that.stage.createActor({
+        actorType: 'asteroid',
+        position: position,
+        angle: util.randRange(0,360),
+        initialForce: util.randRange(10,20),
+        angularVelocity: util.randRange(-angularVelocity,angularVelocity),
+        radius: 4,
+        modelScale: 5
       });
     },
 

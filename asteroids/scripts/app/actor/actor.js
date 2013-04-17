@@ -8,33 +8,29 @@ define([
   util
 ) {
 
+  var aSlice = Array.prototype.slice,
+      oToString = Object.prototype.toString,
+      oType = function(o) {
+        return oToString.call(o,0).slice(8,-1).toLowerCase();
+      };
+
   Actor = my.Class({
     
     collisionEvents : {},
 
-    constructor : function(config) {
+    constructor : function() {
       if(!(this instanceof Actor)) {
-        return new Actor(config);
+        return new Actor();
       }
-
-      this.attributes = _.extend({},config);
-      this.initialize();
     },
 
-    initialize : function() {
-
-      if(!(typeof this.attributes.active !== 'undefined' && this.attributes.active !== null)) {
-        this.attributes.active = true;
-      }
-      this.setActive(this.attributes.active);
+    buildComponents : function() {
 
       this.attributes.physics = window.asteroids.get('physics');
       this.scale = this.attributes.physics.getScale();
       this.stage = window.asteroids.get('stage');
       this.asteroidsApp = window.asteroids.get('asteroidsApp');
       this.coordinatesConversion = this.asteroidsApp.getPhysicsTo3DSpaceConverson();
-
-      this.attributes.state = 'default';
 
       // create Box2D body object
       var bodyConfig = {
@@ -55,6 +51,20 @@ define([
 
       this.body.SetUserData(this);
 
+      this.rotationVector = new THREE.Vector3(0,0,1);
+    },
+
+    initialize : function(config) {
+      this.attributes = _.extend({},config);
+
+      var firstAlloc = util.isFirstAlloc(arguments);
+
+      if(!(typeof this.attributes.active !== 'undefined' && this.attributes.active !== null)) {
+        this.attributes.active = true;
+      }
+      this.setActive(this.attributes.active);
+
+      if(firstAlloc) { this.buildComponents(); }
 
       if(!!this.attributes.initialForce) {
         this.setLinearVelocityFromForce(this.attributes.initialForce);
@@ -64,15 +74,10 @@ define([
         this.setAngularVelocity(this.attributes.angularVelocity);
       }
 
-      if(!!this.attributes.model) {
+      if(this.hasModel()) {
         this.initModel();
+        this.attributes.model.threeData.scale.multiplyScalar(this.attributes.modelScale || 0);
       }
-
-      if(!!this.attributes.modelScale && this.hasModel()) {
-        this.attributes.model.threeData.scale.multiplyScalar(this.attributes.modelScale);
-      }
-
-      this.rotationVector = new THREE.Vector3(0,0,1);
 
     },
 

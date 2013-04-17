@@ -16,17 +16,22 @@ define([
       'projectile' : 'projectileCollision'
     },
 
-    constructor : function(config) {
+    constructor : function() {
       if(!(this instanceof Asteroid)) {
-          return new Asteroid(config);
+          return new Asteroid();
       }
+    },
 
-      this.attributes = _.extend({},config);
-
-      Asteroid.Super.call(this,this.attributes);
+    initialize : function() {
+      var args = arguments;
+      var that = this;
+      this.asteroidsApp = window.asteroids.get('asteroidsApp');
+      this.asteroidsApp.cloneObjectFromTemplate('asteroid',function(model) {
+        args[0].model = model;
+        Asteroid.Super.prototype.initialize.apply(that,args);
+      });
 
       this.materials = [];
-
       // this.initMaterials();
     },
 

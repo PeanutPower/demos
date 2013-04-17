@@ -39,7 +39,9 @@ define([
 
       // TODO: attach common default this.attributes to actors here for convenience
 
-      return actorTypes[type](config);
+      var actor = actorTypes[type]();
+      actor.initialize(config,true);
+      return actor;
     }
 
   });

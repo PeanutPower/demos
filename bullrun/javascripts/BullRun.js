@@ -7,6 +7,7 @@ BullRun = function( veroldApp ) {
   this.numHumanPlayers = 1;
   this.physicsDebugOn = true;
   this.debug = true;
+  this.usePhysicsWorker = true;
 
   this.cameraMode = -1;
   this.physicsDebugRenderScale = 40;
@@ -40,11 +41,13 @@ BullRun.prototype.startup = function( ) {
       that.setupDebugCamera();
       that.setupCollisionDebugCamera();
 
-      that.setupPhysicsWorker();
-
-      that.physicsSim = new PhysicsController( that.veroldApp, that.physicsDebugRenderScale );
-      that.physicsSim.initialize( );
-
+      if ( that.usePhysicsWorker ) {
+        that.setupPhysicsWorker();
+      }
+      else {
+        that.physicsSim = new PhysicsController( that.veroldApp, that.physicsDebugRenderScale );
+        that.physicsSim.initialize( );
+      }
       that.setupTrack();
       that.setupFlockController( that.track );
 
@@ -81,7 +84,7 @@ BullRun.prototype.shutdown = function() {
 BullRun.prototype.update = function( delta ) {
   
   if ( !this.updateRequested ) {
-    this.physicsWorker.postMessage( { name : "updateRequest", data: this.flock.physicsData } );
+    this.physicsSim.postMessage( { name : "updateRequest", data: this.flock.physicsData } );
     this.updateRequested = true;
   }
 
@@ -103,8 +106,8 @@ BullRun.prototype.update = function( delta ) {
 
 BullRun.prototype.setupPhysicsWorker = function() {
   var that = this;
-  this.physicsWorker = new Worker( "javascripts/workerPhysics.js" );
-  this.physicsWorker.onmessage = function (event) {
+  this.physicsSim = new Worker( "javascripts/workerPhysics.js" );
+  this.physicsSim.onmessage = function (event) {
     //Received update from physics worker
     that.updateRequested = false;
     for ( var x in event.data ) {
@@ -117,7 +120,7 @@ BullRun.prototype.setupPhysicsWorker = function() {
     }
   };
   //Execute the worker but don't start its update loop.
-  this.physicsWorker.postMessage("");
+  this.physicsSim.postMessage("");
 }
 
 BullRun.prototype.cycleCamera = function( ) {
@@ -206,12 +209,14 @@ BullRun.prototype.setupDriverCamera = function( humanDriver ) {
 
 BullRun.prototype.setupTrack = function( ) {
   this.track = new Track( this.veroldApp, this.debug );
-  this.track.initialize( this.physicsWorker, this.mainScene );
+  //if ( this.usePhysicsWorker ) {
+    this.track.initialize( this.physicsSim, this.mainScene );
+  //}
 }
 
 BullRun.prototype.setupFlockController = function( track ) {
   this.flock = new FlockController( this.veroldApp, this.debug );
-  this.flock.initialize( this.physicsWorker, track, this.numDrivers, this.numHumanPlayers );
+  this.flock.initialize( this.physicsSim, track, this.numDrivers, this.numHumanPlayers );
 }
 
 BullRun.prototype.onKeyPress = function( event ) {

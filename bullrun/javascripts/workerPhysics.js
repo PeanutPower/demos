@@ -122,40 +122,41 @@ function checkForNearbyObjects( vehicleID ) {
   aabb.lowerBound.Set( position.x - localFlockRange, position.y - localFlockRange);
   aabb.upperBound.Set( position.x + localFlockRange, position.y + localFlockRange);
 
-  for ( var x in vehicleFixtures ) {
-    if ( x !== vehicleID ) {
-      var aabb2 = vehicleFixtures[x].m_aabb;
-      if ( aabb.lowerBound.x < aabb2.upperBound.x && aabb.upperBound.x > aabb2.lowerBound.x ) {
-        if ( aabb.lowerBound.y < aabb2.upperBound.y && aabb.upperBound.y > aabb2.lowerBound.y ) {
-          vehicleData[ vehicleID ].nearbyVehicles.push( vehicleFixtures[x].driverID );
-        }
-      }
-    }
-  }
+  // for ( var x in vehicleFixtures ) {
+  //   if ( x !== vehicleID ) {
+  //     var aabb2 = vehicleFixtures[x].m_aabb;
+  //     if ( aabb.lowerBound.x < aabb2.upperBound.x && aabb.upperBound.x > aabb2.lowerBound.x ) {
+  //       if ( aabb.lowerBound.y < aabb2.upperBound.y && aabb.upperBound.y > aabb2.lowerBound.y ) {
+  //         vehicleData[ vehicleID ].nearbyVehicles.push( vehicleFixtures[x].driverID );
+  //       }
+  //     }
+  //   }
+  // }
 
-  for ( var x in trackFixtures ) {
-    //if ( x !== vehicleID ) {
-      var fixture = trackFixtures[x];
-      var aabb2 = fixture.m_aabb;
-      if ( aabb.lowerBound.x < aabb2.upperBound.x && aabb.upperBound.x > aabb2.lowerBound.x ) {
-        if ( aabb.lowerBound.y < aabb2.upperBound.y && aabb.upperBound.y > aabb2.lowerBound.y ) {
-          vehicleData[ vehicleID ].nearbyObjects.push( { position: trackBodyPositions[ fixture.trackObjID ], trackPos: fixture.trackPos } );
-        }
-      }
-    //}
-  }
+  // for ( var x in trackFixtures ) {
+  //   //if ( x !== vehicleID ) {
+  //     var fixture = trackFixtures[x];
+  //     var aabb2 = fixture.m_aabb;
+  //     if ( aabb.lowerBound.x < aabb2.upperBound.x && aabb.upperBound.x > aabb2.lowerBound.x ) {
+  //       if ( aabb.lowerBound.y < aabb2.upperBound.y && aabb.upperBound.y > aabb2.lowerBound.y ) {
+  //         vehicleData[ vehicleID ].nearbyObjects.push( { position: trackBodyPositions[ fixture.trackObjID ], trackPos: fixture.trackPos } );
+  //       }
+  //     }
+  //   //}
+  // }
   // m_aabb
-  // world.QueryAABB( function( fixture ) {
-  //   //console.log("Fixture ", fixture, " is near driver # " + driverID );
-  //   if ( fixture.driverID !== undefined ) {
-  //     //if ( fixture.driverID != driverID ) {
-  //     vehicleData[ vehicleID ].nearbyVehicles.push( fixture.driverID );
-  //     //}
-  //   }
-  //   else {
-  //     vehicleData[ vehicleID ].nearbyObjects.push( { position: trackBodyPositions[ fixture.trackObjID ], trackPos: fixture.trackPos });
-  //   }
-  // }, localBB[ vehicleID ] );
+  world.QueryAABB( function( fixture ) {
+    //console.log("Fixture ", fixture, " is near driver # " + driverID );
+    if ( fixture.driverID !== undefined ) {
+      //if ( fixture.driverID != driverID ) {
+      vehicleData[ vehicleID ].nearbyVehicles.push( fixture.driverID );
+      //}
+    }
+    else {
+      vehicleData[ vehicleID ].nearbyObjects.push( { position: trackBodyPositions[ fixture.trackObjID ], trackPos: fixture.trackPos });
+    }
+    return true;
+  }, aabb );
 
 }
 

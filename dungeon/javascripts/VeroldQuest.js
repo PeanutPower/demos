@@ -19,9 +19,10 @@ VeroldQuest.prototype.createDungeon = function() {
 }
 
 VeroldQuest.prototype.createPlayer = function() {
-  var models = this.mainScene.getAllObjects( { "filter" :{ "model" : true }})
-    , model = models[_.keys(models)[0]]
+  var model = this.mainScene.getObject('515ad5d334dc2d0200000692')
     , touchControls;
+
+    console.log(model);
 
   if (this.veroldApp.isMobileDevice) {
     touchControls = new PlayerTouchController();

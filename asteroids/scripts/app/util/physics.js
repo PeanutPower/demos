@@ -1,7 +1,13 @@
 /*global define:true, my:true */
 
-define(['myclass','app/util','Box2D'],
-function(my,util) {
+define([
+  'myclass',
+  'app/util/util',
+  'Box2D'
+] , function(
+  my,
+  util
+) {
 
   // abbreviations for common Box2D classes/vars
   var b2Vec2 = Box2D.Common.Math.b2Vec2,

@@ -64,7 +64,11 @@ body {
   font-family:monospace;
   font-size:62.5%;
   background:#000;
-  background:url(../gfx/milkyway.jpg) repeat top center;
+  background:url(../gfx/spacefield.png) repeat top center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 #b2d-debug {

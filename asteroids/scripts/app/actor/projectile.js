@@ -1,8 +1,8 @@
 /*global define:true, my:true */
 define([
     'myclass',
-    'app/actor',
-    'app/util'
+    'app/actor/actor',
+    'app/util/util'
 ] , function(
     my,
     Actor,
@@ -11,13 +11,16 @@ define([
     
   Projectile = my.Class(Actor,{
 
+    collisionEvents : {
+      'asteroid' : 'asteroidCollision'
+    },
+
     constructor : function(config) {
       if(!(this instanceof Projectile)) {
           return new Projectile(config);
       }
 
-      this.attributes = {},
-      this.attributes = _.extend(this.attributes,config);
+      this.attributes = _.extend({},config);
 
       Projectile.Super.call(this,this.attributes);
 
@@ -32,6 +35,10 @@ define([
           this.setActive(false);
         },this), 500);
       }
+    },
+
+    asteroidCollision : function(collider) {
+      this.setActive(false);
     }
 
   });

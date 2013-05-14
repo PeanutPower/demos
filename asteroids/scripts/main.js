@@ -9,9 +9,11 @@ requirejs.config({
     handlebars : 'handlebars-1.0.0.beta.6',
     myclass : 'my.class',
     Box2D : 'Box2D.min',
+    Tween : 'Tween',
+    Stats : 'Stats',
     verold_api_v1 : 'http://assets.verold.com/verold_api/verold_api_v1_norequire',
-    VeroldApp : '../app/VeroldApp',
-    AsteroidsApp : '../app/AsteroidsApp'
+    VeroldApp : '../vendor/VeroldApp',
+    AsteroidsApp : '../vendor/AsteroidsApp'
   },
   shim : {
     underscore : {
@@ -26,6 +28,12 @@ requirejs.config({
     Box2D : {
       exports : 'Box2D'
     },
+    Tween : {
+      exports : 'Tween'
+    },
+    Stats : {
+      exports : 'Stats'
+    },
     VeroldApp : {
       exports : 'VeroldApp'
     },
@@ -35,18 +43,28 @@ requirejs.config({
   }
 });
 
+// shim for Date.now() for older browsers
+if (!Date.now) {
+  Date.now = function now() {
+    return +(new Date);
+  };
+}
+
+
 // load all dependencies here
 requirejs([
-  'app/game',
+  'app/controller/game',
+  'verold_api_v1',
+  'Tween',
   'jquery',
   'underscore',
   'handlebars',
-  'verold_api_v1',
   'VeroldApp',
   'AsteroidsApp'
 ],
-function(app) {
+function(GameController) {
   $(document).ready(function() {
-    app.start();
+    var gameController = new GameController();
+    gameController.setup();
   });
 });

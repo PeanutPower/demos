@@ -2,9 +2,9 @@
 
 define([
   'myclass',
-  'app/actor',
-  'app/util',
-  'app/point'
+  'app/actor/actor',
+  'app/util/util',
+  'app/util/point'
 ] , function(
   my,
   Actor,
@@ -13,6 +13,10 @@ define([
 ) {
 
   Ship = my.Class(Actor,{
+
+    collisionEvents : {
+      'asteroid' : 'depleteShields'
+    },
 
     constructor : function(config) {
       if(!(this instanceof Ship)) {
@@ -34,15 +38,11 @@ define([
 
       Ship.Super.call(this,this.attributes);
 
-      window.asteroids.events.on('collision:ship',function(e,actor) {
-        this.depleteShields();
-      },this);
-  
     },
 
     update : function() {
 
-      var keys = this.attributes.stage.getKeys(),
+      var keys = this.stage.getKeys(),
           localVector,
           worldVector,
           angle;
@@ -71,12 +71,6 @@ define([
 
     },
 
-    adjustDirection : function(angle,step) {
-      var d = angle + step;
-      if(Math.abs(d) > Math.PI) { d = -(d - (d % Math.PI)); }
-      return d;
-    },
-
     propelProjectile : _.throttle(function() {
     
       var localNoseVector,
@@ -97,20 +91,20 @@ define([
       worldVector = this.body.GetWorldVector(localVector);
       force = this.attributes.physics.addVector2(this.body.GetLinearVelocity(),worldVector);
 
-      projectile = this.attributes.stage.getInactiveActor('projectile');
+      projectile = this.stage.getInactiveActor('projectile');
       projectile.setPosition(nosePosition);
       projectile.setAngle(this.body.GetAngle());
       projectile.setLinearVelocityFromForce(force.Length());
       projectile.setActive(true);
       
-    },150),
+    },175),
 
     depleteShields : function() {
       this.attributes.shields -= 5;
 
-      window.asteroids.ui.setShieldsStrength(this.attributes.shields);
+      window.asteroids.get('ui').setShieldsStrength(this.attributes.shields);
       if(this.attributes.shields <= 0)
-        window.asteroids.events.trigger('game:gameover');
+        window.asteroids.get('events').trigger('game:gameover');
     },
 
     getShields : function() {

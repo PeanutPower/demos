@@ -19,8 +19,7 @@ define([
     },
 
     on : function(type, eventHandler, scope) {
-      var handler,
-          handlers = {
+      var handlers = {
             originalHandler : eventHandler
           }
 
@@ -28,15 +27,13 @@ define([
         this.eventTypes[type] = [];
       }
 
-      if(!!scope) {
-        handler = $.proxy(eventHandler,scope);
-        handlers.scopedHandler = handler;
-      } else {
-        handler = eventHandler;
-      }
+      handlers.scopedHandler = function(e) {
+        var params = _.rest(arguments);
+        eventHandler.apply(scope || this, params);
+      };
 
       this.eventTypes[type].push(handlers);
-      this.eventDispatcher.on(type,handler);
+      this.eventDispatcher.on(type,handlers.scopedHandler);
     },
 
     off : function(type,eventHandler) {

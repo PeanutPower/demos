@@ -2,7 +2,7 @@
 
 define([
     'myclass',
-    'app/util'
+    'app/util/util'
 ],function(
     my,
     util
@@ -77,10 +77,6 @@ define([
             if(!!this.context) {
                 this.context.clearRect(bounds.x1,bounds.y1,bounds.x2,bounds.y2);
             }
-        },
-
-        getBounds : function() {
-            return bounds;
         },
 
         getSize : function() {

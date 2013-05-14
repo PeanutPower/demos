@@ -15,19 +15,18 @@ build a game or website for a client or business, contact us at info@verold.com 
 
 * [Falling in Circles](http://api.verold.com/demos/falling-in-circles)
 * [Air Hockey](http://airhockey.jit.su)
+* [Asteroids](http://api.verold.com/demos/asteroids)
+
+### Fiddles
+* [Derrick Weis @ jsFiddle](http://jsfiddle.net/user/gentooist/fiddles/)
+* [Ross McKegney @ jsFiddle](http://jsfiddle.net/user/rossmckegney/fiddles/)
 
 ### WIP
 
-* [Asteroids](http://api.verold.com/demos/asteroids)
-* [BlackBerry Experience](http://api.verold.com/demos/blackberry-experience)
-* [BlackBerry Experience 2](http://api.verold.com/demos/blackberry-experience2)
-* [Box2D Demo](http://api.verold.com/demos/box2d-demo)
 * [Bullrun](http://api.verold.com/demos/bullrun)
-* [CannonJS](http://api.verold.com/demos/cannonjs)
 * [Tyga Rack City](http://api.verold.com/demos/car-demo)
-* [Dungeon Crawler](http://api.verold.com/demos/dungeon)
-* [Stirling Inch Gangnam](http://api.verold.com/demos/stirling-inch-gangnam)
-* [Tanks](http://api.verold.com/demos/tanks)
+
+
 
 
 

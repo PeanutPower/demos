@@ -2,11 +2,11 @@
 
 define([
   'myclass',
-  'app/util',
-  'app/actor',
-  'app/ship',
-  'app/asteroid',
-  'app/projectile'
+  'app/util/util',
+  'app/actor/actor',
+  'app/actor/ship',
+  'app/actor/asteroid',
+  'app/actor/projectile'
 ], function(
   my,
   util,
@@ -17,8 +17,7 @@ define([
 ) {
 
   var actorTypes = {
-    'Actor':Actor
-  , 'Ship':Ship
+    'Ship':Ship
   , 'Asteroid':Asteroid
   , 'Projectile':Projectile
   },
@@ -30,23 +29,19 @@ define([
         return new ActorFactory(config);
       }
 
-      this.attributes = {},
-      this.attributes = _.extend(this.attributes,config);
-
-      // expose physics object
-      this.attributes.physics = this.attributes.stage.getPhysics();
+      this.attributes = _.extend({},config);
     },
 
     createActor : function(config) {
-      var type = util.cap(config.actorType || 'actor');
+      var type = util.cap(config.actorType);
       
       if(!(type in actorTypes)) return null;
 
-      config = _.extend(config,this.attributes);
-
       // TODO: attach common default this.attributes to actors here for convenience
 
-      return actorTypes[type](config);
+      var actor = actorTypes[type]();
+      actor.initialize(config,true);
+      return actor;
     }
 
   });

@@ -2,37 +2,29 @@
 
 define([
   'myclass',
-  'app/util'
+  'app/util/util'
 ] , function(
   my,
   util
 ) {
 
   Actor = my.Class({
+    
+    collisionEvents : {},
 
-    constructor : function(config) {
+    constructor : function() {
       if(!(this instanceof Actor)) {
-        return new Actor(config);
+        return new Actor();
       }
-
-      this.attributes = {},
-      this.attributes = _.extend(this.attributes,config);
-      this.initialize();
     },
 
-    initialize : function() {
+    buildComponents : function() {
 
-      if(!(typeof this.attributes.active !== 'undefined' && this.attributes.active !== null)) {
-        this.attributes.active = true;
-      }
-      this.setActive(this.attributes.active);
-
-      this.scale = this.attributes.physics.getScale();
-      this.stage = this.attributes.stage;
-      this.asteroidsApp = this.stage.getVeroldApps().asteroids;
-      this.coordinatesConversion = this.stage.getVeroldApps().asteroids.getPhysicsTo3DSpaceConverson();
-
-      this.attributes.state = 'default';
+      this.physics = window.asteroids.get('physics');
+      this.scale = this.physics.getScale();
+      this.stage = window.asteroids.get('stage');
+      this.asteroidsApp = window.asteroids.get('asteroidsApp');
+      this.coordinatesConversion = this.asteroidsApp.getPhysicsTo3DSpaceConverson();
 
       // create Box2D body object
       var bodyConfig = {
@@ -46,13 +38,26 @@ define([
         active: this.attributes.active
       };
 
-      var physElements = this.attributes.physics.createBody(bodyConfig);
+      var physElements = this.physics.createBody(bodyConfig);
 
       this.body = physElements.body;
       this.fixture = physElements.fixture;
 
       this.body.SetUserData(this);
 
+      this.rotationVector = new THREE.Vector3(0,0,1);
+    },
+
+    initialize : function(config) {
+      this.attributes = _.extend({},config);
+
+      var firstAlloc = util.isFirstAlloc(arguments);
+      if(firstAlloc) { this.buildComponents(); }
+
+      if(!(typeof this.attributes.active !== 'undefined' && this.attributes.active !== null)) {
+        this.attributes.active = true;
+      }
+      this.setActive(this.attributes.active);
 
       if(!!this.attributes.initialForce) {
         this.setLinearVelocityFromForce(this.attributes.initialForce);
@@ -62,15 +67,12 @@ define([
         this.setAngularVelocity(this.attributes.angularVelocity);
       }
 
-      if(!!this.attributes.model) {
-        this.setModel(this.attributes.model);
+      if(this.hasModel()) {
+        this.initModel();
+        this.attributes.model.threeData.scale.multiplyScalar(this.attributes.modelScale || 0);
+        this.attributes.model.threeData.position.x = 10000;
+        this.attributes.model.threeData.position.y = 10000;
       }
-
-      if(!!this.attributes.modelScale && this.hasModel()) {
-        this.attributes.model.threeData.scale.multiplyScalar(this.attributes.modelScale);
-      }
-
-      this.rotationVector = new THREE.Vector3(0,0,1);
 
     },
 
@@ -101,18 +103,10 @@ define([
       this.attributes.model = model;
     },
 
-    setStates : function(states) {
-      this.attributes.states = states;
-    },
-
-    getStates : function() {
-      return this.attributes.states;
-    },
-
     destroy : function() {
       this.body.DestroyFixture(this.fixture);
-      this.attributes.physics.getWorld().DestroyBody(this.body);
-      this.attributes.stage.removeActor(this);
+      this.physics.getWorld().DestroyBody(this.body);
+      this.stage.removeActor(this);
       if(!!this.attributes.model) {
         // TODO: this is not a true destroy. Ask Mike about how this is done again.
         this.attributes.model.getParentAsset().removeChildObject(this.attributes.model);
@@ -121,12 +115,17 @@ define([
 
     setActive : function(active) {
 
-      var delay = (active) ? 20 : 0;
       this.attributes.active = active;
+      this.addToStage(this.attributes.active);
       if(!!this.body) {
         this.body.SetActive(this.attributes.active);
       }
 
+      if(!this.attributes.active && !!this.onInactiveCallback) {
+        this.onInactiveCallback();
+      }
+
+      var delay = (active) ? 20 : 0;
       setTimeout($.proxy(function() {
         this.visible(this.attributes.active);
       },this), delay);
@@ -135,6 +134,17 @@ define([
 
     isActive : function() {
       return this.attributes.active;
+    },
+
+    addToStage : function(active) {
+      if(active)
+        this.stage.addActor(this);
+      else
+        this.stage.removeActor(this);
+    },
+
+    onInactive : function(callback) {
+      this.onInactiveCallback = callback;
     },
 
     correctPosition : function() {
@@ -150,7 +160,7 @@ define([
     setPosition3DCoords : function(x,y) {
       var nx = x * this.coordinatesConversion,
           ny = y * this.coordinatesConversion;
-      this.body.SetPosition(this.attributes.physics.b2Vec2(nx,ny));
+      this.body.SetPosition(this.physics.b2Vec2(nx,ny));
     },
 
     setPosition : function(position) {
@@ -158,7 +168,7 @@ define([
     },
 
     setLinearVelocityFromForce : function(force) {
-      var localVector = this.attributes.physics.b2Vec2(force,0),
+      var localVector = this.physics.b2Vec2(force,0),
           worldVector = this.body.GetWorldVector(localVector);
       this.body.SetLinearVelocity(worldVector,this.body.GetWorldCenter());
     },
@@ -185,6 +195,21 @@ define([
       this.attributes.model.traverse(function(obj) {
         obj.threeData.visible = bool;
       });
+    },
+
+    collision : function(collider) {
+      var at = collider.attributes.actorType,
+          ce = this.collisionEvents;
+
+      if(!(at in ce)) return;
+
+      setTimeout($.proxy(function() {
+        this[ce[at]](collider);
+      },this),0);
+    },
+
+    initModel : function() {
+      // override in inheriting objects    
     }
 
   });

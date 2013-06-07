@@ -14,7 +14,8 @@ build a game or website for a client or business, contact us at info@verold.com 
 ### Finished Demos:
 
 * [Falling in Circles](http://api.verold.com/demos/falling-in-circles)
-* [Air Hockey](http://airhockey.jit.su)
+* [Air Hockey](http://airhockey.verold.com) ([github](http://github.com/gentooist/verold-airhockey))
+* [Tanks](http://tanks.verold.com) ([github](http://github.com/gentooist/verold-tanks))
 * [Asteroids](http://api.verold.com/demos/asteroids)
 
 ### Fiddles

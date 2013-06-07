@@ -18,20 +18,25 @@
   <link rel="stylesheet" href="stylesheets/dat.gui.css">
   <link rel="stylesheet" href="stylesheets/style.css">
   <link rel="stylesheet" href="stylesheets/scene-font.css">
+  
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
   <script type="text/javascript" src="javascripts/browsercaps.js"></script>
-  <script type="text/javascript" src="http://assets.verold.com/verold_api/verold_api_v1.js"></script>
-  <link href='http://fonts.googleapis.com/css?family=Raleway:400,200,300' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
+  <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
   <script src="javascripts/jquery.hashchange.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="javascripts/jquery.easytabs.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="javascripts/jquery.nicescroll.min.js" type="text/javascript" charset="utf-8"></script>
+  <!--<script type="text/javascript" src="http://assets.verold.com/verold_api/verold_api_v1.js"></script>-->
+  <script type="text/javascript" src="javascripts/verold_api_v1.unstable.js"></script>
 
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,200,300' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+  
 </head>
 <body>
 
   <script type="text/javascript" src="javascripts/ui.js"></script>
-  <script type="text/javascript" src="javascripts/VeroldApp.js"></script>
+  <!--<script type="text/javascript" src="javascripts/VeroldApp.js"></script>-->
   <script type="text/javascript" src="javascripts/GravitationApp.js"></script>
   <script type="text/javascript" src="javascripts/GPGPUSimulation.js"></script>
   <script type="text/javascript" src="javascripts/AsteroidSimulation.js"></script>
@@ -160,29 +165,25 @@
     if (BrowserCaps.isWebGLEnabled()) {
       if ( BrowserCaps.isFloatingPointTexturesEnabeled() ) {
         if ( BrowserCaps.isVertexTexturesEnabeled() ) {
-          var veroldApp = new VeroldApp();
+          //var veroldApp = new VeroldApp();
           
-          var gravApp = new GravitationApp( veroldApp );
-
-          VAPI.onReady( function() {
-            
-            veroldApp.initialize( {
-              container : null,
-              projectId : "5106adb643bfc7020000017f",
+          var gravApp = new GravitationApp( {
+            el: null,
+            projectId : "5106adb643bfc7020000017f",
+            engineOptions: {
               enablePostProcess: false,
               enablePicking: true,
               shadowMapEnabled: false,
-              antialias: !veroldApp.isMobile(),
+              //antialias: !veroldApp.isMobile(),
               handleInput: true,
               clearColor: 0xff0000,
-              //forceLowEndRendering: veroldApp.isMobile(),
-              //xResMultiplier: 0.5,
-              //yResMultiplier: 0.5,
-              success: function() {
-                gravApp.startup();
-              }
-            });
+              
+              // success: function() {
+              //   gravApp.startup();
+              // }
+            }
           });
+          gravApp.run();
         }
         else {
           AppUI.vertexTexturesUnavailable();

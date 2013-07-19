@@ -18,7 +18,6 @@ TrackNode.prototype = {
   },
 
   uninitialize : function() {
-	
     this.veroldApp.off("update", this.update, this );
     this.model = undefined;
   },
@@ -27,12 +26,8 @@ TrackNode.prototype = {
     
   },
 
-  fixedUpdate : function( delta ) {
-
-  },
-
   getPosition : function() {
-    return this.model.threeData.position;
+    return this.model.getPosition();
   }
 
 }

@@ -112,7 +112,7 @@ FlockController.prototype = {
       //var physicsFixture = that.physicsSim.getVehicleFixture( num );
       //physicsFixture.driverID = num;
       //var physicsBody = that.physicsSim.getVehicleBody( num );
-      var newCar = new Vehicle( veroldApp, that.drivers[num] );
+      var newCar = new Vehicle( that.veroldApp, that.drivers[num] );
       newCar.initialize( that.track, {
         success: function( newVehicle ) {
           that.drivers[ num ].setVehicle( newVehicle );

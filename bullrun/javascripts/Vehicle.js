@@ -64,7 +64,7 @@ Vehicle.prototype = {
     this.dampingForce = new b2Vec2(0,0);
 
     carModel.load( {
-      success_hierarchy: function() {
+      init_hierarchy: function() {
         //Create the car and place it on the track
         scene.createInstance( carModel, {
           //id: "Vehicle",
@@ -76,7 +76,7 @@ Vehicle.prototype = {
             //Bind to main update loop
             //that.veroldApp.on("update", that.update, that );
             //that.veroldApp.on("fixedUpdate", that.fixedUpdate, that );
-            if ( options.success ) options.success( that );
+            
 
             that.model.traverse( function(obj) {
               //if ( obj.type == "mesh" && obj.getName().slice(0, 4) == "Body" ) {
@@ -90,6 +90,7 @@ Vehicle.prototype = {
                 that.bodyModel = obj;
               }
             });
+            if ( options.success ) options.success( that );
           },
           
         });

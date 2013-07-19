@@ -66,7 +66,8 @@ PaceRabbit.prototype = {
       // this.interNodeProgress += progressStep;
       // this.currentDifferenceVector.multiplyScalar( this.interNodeProgress );
       
-      this.model.threeData.position.set( pos.x, pos.y, pos.z );// addVectors( lastNodePos, this.currentDifferenceVector );
+      //this.model.setPosition( pos.x, pos.y, pos.z );
+      this.model.set( { "payload.position" : { x: pos.x, y: pos.y, z : pos.z }} );
       
     //}
 
@@ -83,7 +84,7 @@ PaceRabbit.prototype = {
     var diffVector = new THREE.Vector3();
     for ( var x = 0; x < numNodes; x++ ) {
       var pathNode = this.track.getTrackNode( x );
-      diffVector.subVectors( this.model.threeData.position, pathNode.getPosition() );
+      diffVector.subVectors( this.model.getPosition(), pathNode.getPosition() );
       var distance = diffVector.length();
       if ( distance < closestDistance ) {
         closestDistance = distance;
@@ -95,12 +96,12 @@ PaceRabbit.prototype = {
     this.startingNode = closestNode;
     this.nextNode = (this.lastNode + 1) % numNodes;
     var pathNodePos = this.track.getTrackNode( closestNode ).getPosition();
-    this.model.threeData.position.set( pathNodePos.x, pathNodePos.y, pathNodePos.z );
-
+    //this.model.setPosition( pathNodePos.x, pathNodePos.y, pathNodePos.z );
+    this.model.set( { "payload.position" : { x: pathNodePos.x, y: pathNodePos.y, z : pathNodePos.z }} );
   },
 
   getPosition : function() {
-    return this.model.threeData.position;
+    return this.model.getPosition;
   }
 
 }

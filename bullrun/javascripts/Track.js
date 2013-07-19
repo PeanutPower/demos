@@ -49,7 +49,7 @@ Track.prototype = {
 
     this.trackCurve = new THREE.ClosedSplineCurve3( this.trackNodePositions );
 
-    this.paceRabbit = new PaceRabbit( veroldApp );
+    this.paceRabbit = new PaceRabbit( this.veroldApp );
     this.paceRabbit.initialize( this );
 
     this.setupTrackGeometry();

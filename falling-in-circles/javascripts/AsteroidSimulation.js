@@ -279,7 +279,7 @@ AsteroidSimulation.prototype.initializeSimulation = function() {
 		defines: { "NUM_PLANETS" : this.planetData.length },
 
 	});
-}
+};
 
 AsteroidSimulation.prototype.initAsteroidParticles = function() {
 
@@ -372,7 +372,7 @@ AsteroidSimulation.prototype.initAsteroidParticles = function() {
 	particleGeometry.dynamic = false;
 
 	this.particleSystem = new THREE.ParticleSystem( particleGeometry, this.particleMaterial );
-}
+};
 
 AsteroidSimulation.prototype.setSpawnPoint = function( asteroidPosition, asteroidVelocity ) {
 	
@@ -386,19 +386,19 @@ AsteroidSimulation.prototype.setSpawnPoint = function( asteroidPosition, asteroi
 	}
 
 	
-}
+};
 
 AsteroidSimulation.prototype.setSpawnEnabled = function( on ) {
 	this.simulationMaterial.uniforms.spawnEnabled.value = on ? 1.0 : 0.0;
-}
+};
 
 AsteroidSimulation.prototype.getSpawnEnabled = function( ) {
 	return this.simulationMaterial.uniforms.spawnEnabled.value;
-}
+};
 
 AsteroidSimulation.prototype.setSpawnType = function( type ) {
 	this.spawnType = type;
-}
+};
 
 AsteroidSimulation.prototype.update = function( delta ) {
 	//this.timer += delta;
@@ -428,4 +428,4 @@ AsteroidSimulation.prototype.update = function( delta ) {
 	this.simulationMaterial.uniforms.planetData.value[1].y = this.jupiterVector.y;
 	this.gpgpuSim.simulate( );
 	this.particleMaterial.uniforms.map.value = this.gpgpuSim.bufferRT_From;
-}
+};

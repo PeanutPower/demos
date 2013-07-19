@@ -54,17 +54,18 @@ GravitationApp.prototype.engineReady = function( ) {
     reset: function() {
       that.asteroids.resetAsteroids();
     },
-    gravConstant: 3
+    jupiterMass: 1
   };
 
   var gui = new dat.GUI({autoPlace:false});
   $('#datgui-container').append(gui.domElement);
 
-  gui.add(guiData, 'gravConstant', 1, 20).name("Gravity Strength").onChange( function( value ) {
-    
-    that.asteroids.gravConstant = 0.001 * value;
-    that.asteroids.simulationMaterial.uniforms.gravConstant.value = that.asteroids.gravConstant;
-    that.asteroids.updatePlanetData( 100, 1 );
+  gui.add(guiData, 'jupiterMass', 0.05, 2.5).step(0.01).name("Jupiter's Mass").onChange( function( value ) {
+        
+    //that.asteroids.simulationMaterial.uniforms.gravConstant.value = that.asteroids.gravConstant;
+    that.asteroids.updatePlanetData( 100, value );
+
+    that.gravityFieldMat.uniforms.planetData.value = that.planetData;
   });
   
   AppUI.initControlsOverlay();
@@ -195,7 +196,7 @@ GravitationApp.prototype.engineReady = function( ) {
 
   });
 
-},
+};
 
 GravitationApp.prototype.shutdown = function() {
 
@@ -347,7 +348,7 @@ GravitationApp.prototype.initDebugTexture = function() {
   this.debugTextureQuad.position.z = -5;
   this.mainScene.threeData.add( this.debugTextureQuad );
   this.debugTextureQuad.visible = false;
-}
+};
 
 GravitationApp.prototype.initGravityFieldTexture = function() {
   var gravityField_shader_vs = [
@@ -361,7 +362,7 @@ GravitationApp.prototype.initGravityFieldTexture = function() {
       "vUv = position.xy + vec2( 0.5 / width, 0.5 / height );",
       "gl_Position = projectionMatrix * modelViewMatrix * vec4( vec3( position.xy, 0.0), 1.0 );",
 
-    "}",
+    "}"
   ].join("\n");
 
   var gravityField_shader_fs = [
@@ -428,7 +429,7 @@ GravitationApp.prototype.initGravityFieldTexture = function() {
   this.gravityFieldQuad.position.z = 0.01;
   this.mainScene.threeData.add( this.gravityFieldQuad );
   this.gravityFieldQuad.visible = false;
-}
+};
 
 GravitationApp.prototype.toggleGravityField = function( on ) {
   if ( on === undefined ) {
@@ -445,12 +446,12 @@ GravitationApp.prototype.toggleGravityField = function( on ) {
     this.gravityFieldQuad.opacity = 1.0;
   }
   this.gravityFieldMat.uniforms.opacity.value = this.gravityFieldQuad.opacity;
-}
+};
 
 GravitationApp.prototype.update = function( delta ) {
-	// if ( this.jupiter.threeData ) {
-	// 	this.rotation += delta * 0.2;
-	// 	this.jupiter.threeData.quaternion.setFromEuler( {x: 0, y: this.rotation, z: 0});
+  // if ( this.jupiter.threeData ) {
+  //  this.rotation += delta * 0.2;
+	//  this.jupiter.threeData.quaternion.setFromEuler( {x: 0, y: this.rotation, z: 0});
 	// }
   
   delta = 0.01;
@@ -458,6 +459,10 @@ GravitationApp.prototype.update = function( delta ) {
     
   //if ( !this.camera.transitionTargetPos ) {
     if ( this.asteroids ) {
+
+      var deltaPhys = 0.01667;
+      this.camera.update( deltaPhys );
+      this.asteroids.update( deltaPhys );
       
       this.debugTextureMat.uniforms.map.value = this.asteroids.bufferRT_From;
       if ( this.jupiter.threeData ) {
@@ -489,7 +494,6 @@ GravitationApp.prototype.update = function( delta ) {
         //console.log(this.mouseVelocity);
         
       }
-   
 
       //Animate gravity field fade in/out
       if ( this.gravityFieldQuad.visible && this.gravityFieldQuad.opacity < 1.0) {
@@ -498,9 +502,7 @@ GravitationApp.prototype.update = function( delta ) {
         this.gravityFieldMat.uniforms.opacity.value = this.gravityFieldQuad.opacity;
       }
 
-      var deltaPhys = 0.01667;
-      this.camera.update( deltaPhys );
-      this.asteroids.update( deltaPhys );
+      
       
 
       //Do gravity simulation and then update the position of the planets
@@ -511,31 +513,25 @@ GravitationApp.prototype.update = function( delta ) {
       // }
     }
   }
-}
-
-GravitationApp.prototype.fixedUpdate = function( delta ) {
- 
-  
-  
-}
+};
 
 GravitationApp.prototype.onMouseMove = function( event ) {
 
   this.mousePos.x = ( event.sceneX / this.getRenderWidth() - 0.5 ) * 2.0;
   this.mousePos.y = -( event.sceneY / this.getRenderHeight() - 0.5 ) * 2.0;
-}
+};
 
 GravitationApp.prototype.onMouseDown = function( event ) {
-  if ( event.button == this.inputHandler.mouseButtons['left']) {
+  if ( event.button === this.inputHandler.mouseButtons.left ) {
     this.asteroids.setSpawnEnabled( true );
     this.asteroids.setSpawnType( 'circularOrbit' );
   }
-  else if ( event.button == this.inputHandler.mouseButtons['right']) {
+  else if ( event.button === this.inputHandler.mouseButtons.right ) {
     this.asteroids.setSpawnEnabled( true );
     this.asteroids.setSpawnType( 'customOrbit' );
   }
 
-  if ( event.button == this.inputHandler.mouseButtons[ "left" ] && 
+  if ( event.button === this.inputHandler.mouseButtons.left && 
     !this.inputHandler.mouseDragStatePrevious[ event.button ] ) {
     
     // var scene = this.veroldEngine.assetRegistry.assets[ this.currentSceneID ].threeData;
@@ -552,13 +548,13 @@ GravitationApp.prototype.onMouseDown = function( event ) {
     }
 
   }
-}
+};
 
 GravitationApp.prototype.onMouseUp = function( event ) {
   this.asteroids.setSpawnEnabled( false );
 
   
-}
+};
 
 GravitationApp.prototype._currentTouchIndexById = function(idToFind) {
   for (var i in this.currentTouches ) {
@@ -569,7 +565,7 @@ GravitationApp.prototype._currentTouchIndexById = function(idToFind) {
     }
   }
   return -1;    // not found
-}
+};
 
 GravitationApp.prototype.onTouchStart = function( event ) {
   //event.stopPropagation();
@@ -599,7 +595,7 @@ GravitationApp.prototype.onTouchStart = function( event ) {
     this.asteroids.setSpawnType( 'circularOrbit' );
   }
   
-}
+};
 
 GravitationApp.prototype.onTouchEnd = function( event ) {
 
@@ -612,7 +608,7 @@ GravitationApp.prototype.onTouchEnd = function( event ) {
     this.currentTouches.splice(i, 1);
   }
   this.asteroids.setSpawnEnabled( false );
-}
+};
 
 GravitationApp.prototype.onTouchMove = function( event ) {
 
@@ -625,7 +621,7 @@ GravitationApp.prototype.onTouchMove = function( event ) {
 
   this.mousePos.x = ( event.sceneX / this.getRenderWidth() - 0.5 ) * 2.0;
   this.mousePos.y = -( event.sceneY / this.getRenderHeight() - 0.5 ) * 2.0;
-}
+};
 
 
 GravitationApp.prototype.onKeyPress = function( event ) {
@@ -635,20 +631,20 @@ GravitationApp.prototype.onKeyPress = function( event ) {
 
   //if ( event.keyCode == keyCodes['Z'] ) this.debugTextureQuad.visible = !(this.debugTextureQuad.visible);
   //else if ( event.keyCode == keyCodes['X'] ) this.gravityFieldQuad.visible = !(this.gravityFieldQuad.visible);
-  if ( event.keyCode == keyCodes['space'] && !this.camera.transitionTargetPos ) {
+  if ( event.keyCode == keyCodes.space && !this.camera.transitionTargetPos ) {
     this.camera.toggleCameraLock( );
     this.toggleGravityField();
   }
-  else if ( event.keyCode === keyCodes['P'])
+  else if ( event.keyCode === keyCodes.P )
   {
     this.veroldEngine.Renderer.stats.domElement.hidden = !this.veroldEngine.Renderer.stats.domElement.hidden;
   }
-  else if ( event.keyCode === keyCodes['R'])
+  else if ( event.keyCode === keyCodes.R )
   {
     this.asteroids.resetAsteroids();
   }
     
-}
+};
 
 GravitationApp.prototype.onResize = function( ) {
   // var aspect = this.veroldEngine.Renderer.getWidth() / this.veroldEngine.Renderer.getHeight();
@@ -663,15 +659,15 @@ GravitationApp.prototype.onResize = function( ) {
       this.enableJupiterView();
     }
   }
-}
+};
 
 GravitationApp.prototype.enableJupiterView = function( ) {
   this.camera.toggleCameraLock( true );
   this.toggleGravityField( true );
-}
+};
 
 GravitationApp.prototype.disableJupiterView = function( ) {
   this.camera.toggleCameraLock( false );
   this.toggleGravityField( false );
-}
+};
 

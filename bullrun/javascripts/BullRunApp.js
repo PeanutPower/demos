@@ -175,8 +175,7 @@ THE SOFTWARE.
 
       //Create the camera
       this.debugCamera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 10000 );
-      this.debugCamera.useQuaternion = true;
-      
+            
       //Tell the engine to use this camera when rendering the scene.
       this.veroldEngine.setActiveCamera( this.debugCamera );
 
@@ -200,7 +199,6 @@ THE SOFTWARE.
       var lookAtPoint = new THREE.Vector3();
       var size = this.getRenderHeight() / this.physicsDebugRenderScale;
       this.collisionDebugCamera = new THREE.OrthographicCamera( 0, size * aspect, 0, -size, 1, 1000);
-      this.collisionDebugCamera.useQuaternion = true;
       this.collisionDebugCamera.up.set( 0, 0, -1);
       this.collisionDebugCamera.position.set( 0, 5, 0);
       this.collisionDebugCamera.lookAt( lookAtPoint );
@@ -211,8 +209,7 @@ THE SOFTWARE.
 
       //Create the camera
       this.driverCamera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 10000 );
-      this.driverCamera.useQuaternion = true;
-
+      
       this.driverCameraController = new DriverCameraController();
       var driverCameraParams =  {
         "name": "DriverCamera1",

@@ -175,8 +175,9 @@ Vehicle.prototype = {
     this.tempVector_1.set( 0, 0, 1 );
     //this.tempQuaternion1.setFromEuler( this.tempVector_1 );
     this.tempQuaternion1.setFromAxisAngle( this.tempVector_1, roll );
-    // this.tempQuaternion1.multiply( this.tempQuaternion2 );
-    this.bodyModel.set( {"payload.orientation" : { x: this.tempQuaternion1.x, y: this.tempQuaternion1.y, z: this.tempQuaternion1.z, w: this.tempQuaternion1.w}});
+    if ( this.bodyModel ) {
+      this.bodyModel.set( {"payload.orientation" : { x: this.tempQuaternion1.x, y: this.tempQuaternion1.y, z: this.tempQuaternion1.z, w: this.tempQuaternion1.w}});
+    }
   },
 
   getModel: function() {

@@ -2,7 +2,7 @@ TrojanCamera = function(  ) {
 	this.threeCamera;
 	this.asteroidSimulation;
 	this.cameraLock = false;
-	this.eulerRotation = new THREE.Vector3();
+	this.eulerRotation = new THREE.Euler();
 	this.transitionTime = 0;
 	this.inverseTransformation = new THREE.Matrix4();
 	this.screenToWorldPos = new THREE.Vector3();

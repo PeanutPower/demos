@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Bullrun</title>
+  <title>Verold Three.JS Boilerplate</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   <link rel="stylesheet" href="stylesheets/reset.css">
   <link rel="stylesheet" href="stylesheets/style.css">
-  <script type="text/javascript" src="http://assets.verold.com/verold_api/verold_api_v1.js"></script>
-  <script type="text/javascript" src="javascripts/underscore.js"></script>
-  <script type="text/javascript" src="javascripts/VeroldApp.js"></script>
+  <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+  <!--<script type="text/javascript" src="http://assets.verold.com/verold_api/verold_api_v1.0.6.js"></script>-->
+  <script type="text/javascript" src="javascripts/verold_api_v1.unstable.js"></script>
+  
   <script type="text/javascript" src="javascripts/DebugCameraController.js"></script>
   <script type="text/javascript" src="javascripts/DriverCameraController.js"></script>
 
@@ -21,9 +24,44 @@
   <script type="text/javascript" src="javascripts/Driver.js"></script>
   <script type="text/javascript" src="javascripts/PaceRabbit.js"></script>
   <script type="text/javascript" src="javascripts/FlockController.js"></script>
-  <script type="text/javascript" src="javascripts/BullRun.js"></script>
+
+  <script type="text/javascript" src="javascripts/BullRunApp.js"></script>
+  <script type="text/javascript" src="javascripts/BullRunUI.js"></script>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
+
+
 </head>
 <body>
+
+  <!-- facebook share button dependency -->
+  <div id="fb-root"></div>
+
+  <div id="poweredby">
+    <p>Powered by <a href="http://studio.verold.com" target="_blank"><img src="images/verold_logo_white.png" class="verold-logo" /></a> & <a href="http://mrdoob.github.com/three.js/" target="_blank"><img src="images/three_js_logo.png" class="threejs-logo" /></a></p>
+  </div>
+
+  <div id="render-target-container">
+
+    <div id="info-panel" class="panel">
+      <a href="javascript:void(0);" class="close">&times;</a>
+      <h2>Information</h2>
+      <p>Use this panel to provide information related to you project.</p>
+    </div>
+
+    <div id="settings-panel" class="panel">
+      <a href="javascript:void(0);" class="close">&times;</a>
+      <h2>Settings</h2>
+      <p><i class="icon-moon icon-orbit"></i> <strong>Orbit</strong> camera with left click and drag</p>
+      <p>Here you can place any UI elements that allow users to adjust settings that influence the opporation of your project. Dat.GUI is a popular choice for quickly creating GUI elements.</p>
+    </div>
+
+  </div>
+
+  <div id="headers">
+    <h1>Verold Boiler Plate</h1>
+    <h2><!-- Replace These Headers --></h2>
+  </div>
 
   <div id="loading-progress-container">
     <p>Loading...</p>
@@ -32,37 +70,69 @@
     </div>
   </div>
 
-  <div style="display:none;" id="webGLunsupported">
-    <p>This demo requires support for webGL.<br />
-    Click <a href="http://verold.com/blog/2013/1/2/enabling-webgl-in-your-browser" target="_blank">here</a> to learn more.</p>
+  <div id="menu">
+    <a id="info" class="icon-moon icon-info" href="javascript:void(0);"></a>
+    <a id="settings" class="icon-moon icon-settings" href="javascript:void(0);"></a>
   </div>
 
+  <div id="render-errors"></div>
+
   <script>
+    var bc = VAPI.browserCaps;
 
-    var veroldApp = new VeroldApp();
-    console.info(veroldApp);
-    var myApp = new BullRun( veroldApp );
+    // perform some tests to see if browser
+    // is capable of rendering with webGL
+    if(!bc.isWebGLEnabled()) {
+      AppUI.renderError('webGLunsupported');
+      return;
+    }
 
-    VAPI.onReady( function() {
-      
-      veroldApp.initialize( {
-        container : null,
-        projectId : "5137ad1a13ccb80200000529",
+    if(!bc.isFloatingPointTexturesEnabeled()) {
+      AppUI.renderError('floatingPointTexturesUnavailable');
+      return;
+    }
+
+    if(!bc.isVertexTexturesEnabeled()) {
+      AppUI.renderError('vertexTexturesUnavailable');
+      return;
+    }
+
+    var myApp = new BullRunApp({
+      el : '#render-target-container',
+      projectId : "5137ad1a13ccb80200000529",
+      engineOptions: {
         enablePostProcess: false,
-        antialias: !veroldApp.isMobile(),
-        enablePicking: false,
-        shadowMapEnabled: false,
-        shadowMapType: THREE.BasicShadowMap,
-        handleInput: true,
+        antialias: VAPI.isMobile(),
+        //The following structure allows you to set what input events the Verold API binds for you.
+        //For anything not specified, the default behaviour will be to ignore the events so that you
+        //can handle them as you like.
+        inputSettings : {
+          enable: true,
+          mouseEvents: {
+            enable: true,
+            scroll_preventDefault: false,
+            contextmenu: true,
+            contextmenu_preventDefault: true,
+          },
+          touchEvents: {
+            enable: true,
+          },
+          keyEvents: {
+            enable: true,
+            down: true,
+            up: true,
+            recordState: true,
+            down_preventDefault: false,
+          }
+        },
+        enablePicking: true,
+        shadowMapEnabled: true,
         clearColor: 0xff0000,
-        forceLowEndRendering: veroldApp.isMobile(),
-        success: function() {
-          myApp.startup();
-        }
-      });
+        forceLowEndRendering: VAPI.isMobile()
+      }
     });
 
+    myApp.run();
   </script>
-  
 </body>
 </html>

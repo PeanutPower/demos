@@ -98,7 +98,7 @@ GravitationApp.prototype.engineReady = function( ) {
   this.mainScene = this.assetRegistry.Scenes.getAsset( "5106adb643bfc70200000181" );
 
 	this.loadScene("5106adb643bfc70200000181", {
-    init_hierarchy: function( scene ) {
+    load_base: function( scene ) {
       
       //Bind to input events to control the camera
       that.veroldEngine.on("keyDown", that.onKeyPress, that);

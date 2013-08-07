@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+<title>Ludei Test</title>
+<style type="text/css">
+body {
+    margin: 0 auto;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+#verold3d {
+    width: 100%;
+    height: 100%;
+}
+body, html, canvas {
+    width:100%;
+    height:100%;
+}
+</style>
+<script src="./verold_api_v1.unstable.js"></script>
+</head>
+<body>
+<div id="verold3d"></div>
+<script>
+var DemoApplication = VAPI.VeroldApp.extend({
+    defaultSceneLoaded: function (scene) {
+        var models = scene.getAllObjects({ 'filter': { 'model': true } }),
+            lookAt;
+
+        this.model = models[Object.keys(models)[0]];
+
+        this.camera = new THREE.PerspectiveCamera(70, this.getAspect(), 0.1, 10000);
+        this.camera.up.set(0, 1, 0);
+        this.camera.position.set(0, 0.5, 2);
+
+        lookAt = new THREE.Vector3();
+
+        if (this.model) {
+          if (this.model.threeData.center) {
+            lookAt.add(this.model.threeData.center);
+          }
+          lookAt.multiply(this.model.threeData.scale);
+          lookAt.applyQuaternion(this.model.threeData.quaternion);
+          lookAt.add(this.model.threeData.position);
+        }
+
+        this.camera.lookAt(lookAt);
+
+        this.veroldEngine.setActiveCamera(this.camera);
+    },
+
+    update: function(delta) {
+    }
+});
+
+var app = new DemoApplication({
+    el: '#verold3d',
+    //projectId: '51cc618484065d020000000a',
+    //projectId: '5190d5079d51fb02000001e4',
+    //projectId: '5130099e21d65002000000f6',
+    //projectId: '51cc73f3f5115e0200000083',
+    //projectId: '51892bd08c133302000003be',
+    //projectId: '518404643d507402000001c5',
+    //projectId: '5130099e21d65002000000f6',
+    projectId: '51eee88aa0af1d0200000125',
+    engineOptions: {
+    }
+});
+
+app.run();
+</script>
+</body>
+</html>
